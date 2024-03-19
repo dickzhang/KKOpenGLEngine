@@ -1,0 +1,13 @@
+%NS_YAML 1.2
+%TAG !u! tag:dev.inibiru.com,2023:
+Nanjing Rui Yue Technology Co. Ltd.
+2021050
+0
+---
+- "@n": !t!E-PR-O
+    T: ModelAttributesSettings
+    G: 591f5dcaf3f7c524081dc039d58b541a
+    F:
+      - m_MetaFilePath: Assets/Models/cornell-box/cornell_box - Copy.obj.nmeta
+      - m_MaterialLocation: 1
+...

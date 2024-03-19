@@ -1,0 +1,15 @@
+%NS_YAML 1.2
+%TAG !u! tag:dev.inibiru.com,2023:
+Nanjing Rui Yue Technology Co. Ltd.
+2021050
+0
+---
+- "@n": !t!E-PR-O
+    T: TextureAttributesSettings
+    G: 68857b7d41dd8a143804fab9c92bbfe7
+    F:
+      - m_MetaFilePath: Assets/Models/crytek-sponza/textures/vase_dif.tga.nmeta
+      - m_NumMips: 1
+      - m_AddressingMode: 0
+      - m_FilterType: 2
+...

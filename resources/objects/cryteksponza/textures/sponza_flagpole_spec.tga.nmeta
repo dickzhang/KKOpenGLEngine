@@ -1,0 +1,15 @@
+%NS_YAML 1.2
+%TAG !u! tag:dev.inibiru.com,2023:
+Nanjing Rui Yue Technology Co. Ltd.
+2021050
+0
+---
+- "@n": !t!E-PR-O
+    T: TextureAttributesSettings
+    G: 6720f2d45b2b5c242959db834795a60a
+    F:
+      - m_MetaFilePath: Assets/Models/crytek-sponza/textures/sponza_flagpole_spec.tga.nmeta
+      - m_NumMips: 1
+      - m_AddressingMode: 0
+      - m_FilterType: 2
+...

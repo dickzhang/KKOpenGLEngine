@@ -1,0 +1,5 @@
+# ignores following folders
+bin/
+build/
+out/
+.vs/
