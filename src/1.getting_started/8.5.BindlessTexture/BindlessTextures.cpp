@@ -81,9 +81,9 @@ int main()
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 	}
 	//检索纹理句柄
-	int handle0 = glGetTextureHandleARB(texture0);
+	//int handle0 = glGetTextureHandleARB(texture0);
 	//使纹理处理常驻
-	glMakeTextureHandleResidentARB(handle0);
+	//glMakeTextureHandleResidentARB(handle0);
 	stbi_image_free(data);
 
 	glGenTextures(1, &texture1);
@@ -97,12 +97,12 @@ int main()
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data1);
 	}
-	int handle1 = glGetTextureHandleARB(texture1);
-	glMakeTextureHandleResidentARB(handle1);
+	//int handle1 = glGetTextureHandleARB(texture1);
+	//glMakeTextureHandleResidentARB(handle1);
 	stbi_image_free(data1);
 
-	glUniformHandleui64ARB(glGetUniformLocation(ourShader.ID, "tex0"), handle0);
-	glUniformHandleui64ARB(glGetUniformLocation(ourShader.ID, "tex1"), handle1);
+	//glUniformHandleui64ARB(glGetUniformLocation(ourShader.ID, "tex0"), handle0);
+	//glUniformHandleui64ARB(glGetUniformLocation(ourShader.ID, "tex1"), handle1);
 
 	while (!glfwWindowShouldClose(window))
 	{
