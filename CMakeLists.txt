@@ -69,6 +69,7 @@ set(CHAPTERS
     5.advanced_lighting
     6.pbr
     7.in_practice
+    9.other
 )
 
 set(1.getting_started
@@ -193,6 +194,9 @@ set(GUEST_ARTICLES
 	8.guest/2022/6.physically_based_bloom
 	8.guest/2022/7.area_lights/1.area_light
 	8.guest/2022/7.area_lights/2.multiple_area_lights
+)
+set(9.other
+    9.1.infiniteGrid
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)

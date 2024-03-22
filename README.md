@@ -31,14 +31,6 @@ brew install cmake assimp glm glfw freetype
 cmake -S . -B build
 cmake --build build -j$(sysctl -n hw.logicalcpu)
 ```
-## Create Xcode project on Mac platform
-Thanks [@caochao](https://github.com/caochao):
-After cloning the repo, go to the root path of the repo, and run the command below:
-```
-mkdir xcode
-cd xcode
-cmake -G Xcode ..
-```
 
 ## Glitter
 Polytonic created a project called [Glitter](https://github.com/Polytonic/Glitter) that is a dead-simple boilerplate for OpenGL. 
