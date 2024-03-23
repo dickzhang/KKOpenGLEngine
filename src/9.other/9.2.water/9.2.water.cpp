@@ -38,7 +38,7 @@ glm::vec3 fogColor(0.5, 0.6, 0.7);
 glm::vec3 lightColor(255 / 255.0, 255 / 255.0, 230 / 255.0);
 glm::vec3 lightPos = glm::vec3(100, 50000.0, -50000.0);
 int waterscale = 120;
-float waterHeight = 100.;
+float waterHeight = 10.;
 glm::vec3 waterposition = glm::vec3(0.0, waterHeight, 0.0);
 glm::mat4 modelMatrix = glm::mat4(1.0);
 FrameBufferObject * reflectionFBO =nullptr;
@@ -179,8 +179,8 @@ int main()
 		shader.setVec3("cameraPos", camera.Position);
 		shader.setVec3("lightPos", lightPos);
 		shader.setVec3("lightColor", lightColor);
-		shader.setFloat("distorsionStrength", 0.25);
-		shader.setFloat("specularPower", 50.0);
+		shader.setFloat("distorsionStrength", 0.05);
+		shader.setFloat("specularPower", 20.0);
 		shader.setFloat("near", cameraNear);
 		shader.setFloat("far", cameraFar);
 
