@@ -1,13 +1,13 @@
 #version 330 core
 
-const float scale = 100.0;
+in float scale;
 const float lod_floor = 8.0;  // minimum number of pixels between lines before LOD could switch
-const vec4 x_axis_color = vec4(220, 20, 60, 255) / 255.0;
-const vec4 z_axis_color = vec4(0, 46, 255, 255) / 255.0;
+const vec4 x_axis_color = vec4(0.0, 0.0, 1.0, 1.0);
+const vec4 z_axis_color = vec4(1.0, 0.0, 0.0, 1.0);
 
 uniform float cell_size = 1.0;
-uniform vec4 thin_line_color = vec4(vec3(1.0,0.0,0.0), 1.0);
-uniform vec4 wide_line_color = vec4(vec3(0.0,1.0,1.0), 1.0);  // every 10th line is thick
+uniform vec4 thin_line_color = vec4(0.2,0.2,0.2, 1.0);//Ï¸Ïß
+uniform vec4 wide_line_color = vec4(0.5,0.5,0.5, 1.0);// every 10th line is thick
 
 #define INV_LN10 0.434294481903252  // 1 over ln10
 #define clamp01(x) clamp(x, 0.0, 1.0)
@@ -61,7 +61,7 @@ void main() {
 
     // calculate opacity falloff based on distance to grid extents
     float opacity_falloff = 1.0 - clamp01(length(_uv) / scale);
-
+    opacity_falloff=1.0;
     // blend between LOD level alphas and scale with opacity falloff
     c.a *= (alpha_2 > 0.0 ? alpha_2 : alpha_1 > 0.0 ? alpha_1 : (alpha_0 * (1.0 - fade))) * opacity_falloff;
     color = c;

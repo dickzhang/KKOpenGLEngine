@@ -53,7 +53,7 @@ float computeLinearDepth(vec3 pos)
 }
 
 void main() {
-    float t = -nearPoint.y / (farPoint.y - nearPoint.y);
+      float t = -nearPoint.y / (farPoint.y - nearPoint.y);
       vec3 fragPos3D = nearPoint + t * (farPoint - nearPoint);
       gl_FragDepth = computeDepth(fragPos3D);
       float linearDepth = computeLinearDepth(fragPos3D); 

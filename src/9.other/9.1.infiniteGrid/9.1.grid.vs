@@ -1,13 +1,15 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
-uniform mat4 vp;
-out vec2 _uv;
 
-const float scale = 100.0;
+uniform mat4 vp;
+uniform vec3 cameraPos;
+out vec2 _uv;
+out float scale;
 
 void main()
 {
-    vec3 position =aPos * scale;
-    gl_Position =  vp*vec4(position, 1.0);
-    _uv = position.xz;  // limit the grid to the X-Z plane (y == 0)
+    scale=length(cameraPos)+100;
+    vec3 position = aPos *scale;
+    gl_Position = vp * vec4(position, 1.0);
+    _uv = position.xz;
 }

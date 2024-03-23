@@ -9,6 +9,7 @@
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
 #include <iostream>
+#define IS_USE_GRID_NEW 0
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void mouse_callback(GLFWwindow * window, double xpos, double ypos);
@@ -29,6 +30,28 @@ bool firstMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+Shader shader;
+#if IS_USE_GRID_NEW
+	float vertices[] =
+	{
+		 1, 1, 0,
+		 -1, -1, 0,
+		 -1, 1, 0,
+		 -1, -1, 0,
+		 1, 1, 0,
+		 1, -1, 0
+	};
+#else
+	float vertices[] =
+	{
+		 -1, 0, -1,
+		 -1, 0, 1,
+		 1, 0, 1,
+		 1, 0, 1,
+		 1, 0, -1,
+		 -1, 0, -1
+	};
+#endif // 0
 
 int main()
 {
@@ -59,19 +82,12 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	//Shader shader("9.1.grid.vs", "9.1.grid.fs");
-	Shader shader("9.1.gridNew.vs", "9.1.gridNew.fs");
 	Shader ourShader("cube.vs", "cube.fs");
-
-	float vertices[] =
-	{
-		 1, 1, 0,
-		 -1, -1, 0,
-		 -1, 1, 0,
-		 -1, -1, 0,
-		 1, 1, 0,
-		 1, -1, 0
-	};
+#if IS_USE_GRID_NEW
+	shader.LoadShader("9.1.gridNew.vs", "9.1.gridNew.fs");
+#else
+	shader.LoadShader("9.1.grid.vs", "9.1.grid.fs");
+#endif // 0
 
 	unsigned int VBO, VAO;
 	glGenVertexArrays(1, &VAO);
@@ -147,7 +163,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	while(!glfwWindowShouldClose(window))
 	{
-		float currentFrame = static_cast<float>( glfwGetTime());
+		float currentFrame = static_cast<float>( glfwGetTime() );
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
@@ -178,6 +194,7 @@ int main()
 		shader.setMat4("vp", vp);
 		shader.setMat4("vpIn", glm::inverse(vp));
 		shader.setFloat("near", cameraNear);
+		shader.setVec3("cameraPos", camera.Position);
 		shader.setFloat("far", cameraFar);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -192,6 +209,7 @@ int main()
 
 void processInput(GLFWwindow * window)
 {
+	camera.MovementSpeed = 50.;
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
