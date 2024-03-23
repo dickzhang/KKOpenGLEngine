@@ -15,9 +15,15 @@ public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr,
-           const char* tessControlPath = nullptr, const char* tessEvalPath = nullptr)
+    Shader(){}
+    Shader(const char * vertexPath, const char * fragmentPath, const char * geometryPath = nullptr,
+        const char * tessControlPath = nullptr, const char * tessEvalPath = nullptr)
     {
+        loadShader(vertexPath,fragmentPath,geometryPath,tessControlPath,tessEvalPath);
+    }
+
+    void loadShader(const char * vertexPath, const char * fragmentPath, const char * geometryPath = nullptr,
+        const char * tessControlPath = nullptr, const char * tessEvalPath = nullptr){
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;
@@ -30,11 +36,11 @@ public:
         std::ifstream tcShaderFile;
         std::ifstream teShaderFile;
         // ensure ifstream objects can throw exceptions:
-        vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        gShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        tcShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-        teShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        tcShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        teShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try
         {
             // open files
@@ -74,12 +80,12 @@ public:
                 tessEvalCode = teShaderStream.str();
             }
         }
-        catch (std::ifstream::failure& e)
+        catch(std::ifstream::failure & e)
         {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " 
+            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: "
                 << e.what() << std::endl;
         }
-        const char* vShaderCode = vertexCode.c_str();
+        const char * vShaderCode = vertexCode.c_str();
         const char * fShaderCode = fragmentCode.c_str();
         // 2. compile shaders
         unsigned int vertex, fragment;
@@ -139,8 +145,8 @@ public:
         glDeleteShader(fragment);
         if(geometryPath != nullptr)
             glDeleteShader(geometry);
-
     }
+   
     // activate the shader
     // ------------------------------------------------------------------------
     void use()
@@ -205,7 +211,18 @@ public:
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
-
+    void setSampler2D(const std::string & name, unsigned int texture, int id) const
+    {
+        glActiveTexture(GL_TEXTURE0 + id);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        this->setInt(name, id);
+    }
+    void setSampler3D(const std::string & name, unsigned int texture, int id) const
+    {
+        glActiveTexture(GL_TEXTURE0 + id);
+        glBindTexture(GL_TEXTURE_3D, texture);
+        this->setInt(name, id);
+    }
 private:
     // utility function for checking shader compilation/linking errors.
     // ------------------------------------------------------------------------

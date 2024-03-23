@@ -198,6 +198,7 @@ set(GUEST_ARTICLES
 set(9.other
     9.1.infiniteGrid
     9.2.water
+    9.3.Terrain
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
