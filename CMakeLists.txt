@@ -229,7 +229,8 @@ function(create_project_from_sources chapter demo)
 		string(REPLACE "/" "_" replaced ${chapter})
 		set(NAME ${replaced})
 	else()
-		set(NAME "${chapter}__${demo}")
+		set(NAME "${demo}")
+
 	endif()
     add_executable(${NAME} ${SOURCE})
     target_link_libraries(${NAME} ${LIBS})
@@ -247,6 +248,7 @@ function(create_project_from_sources chapter demo)
         set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin/${chapter}")
         set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin/${chapter}")
     endif(WIN32)
+   
     # copy shader files to build directory
     file(GLOB SHADERS
              "src/${chapter}/${demo}/*.vs"
