@@ -53,8 +53,10 @@ int gridLength = length + ( length + 1 ) % 2;
 Shader shad;
 float waterHeight = 10.0f;
 float up = 0.0;
+//随机的种子
 glm::vec3 seed = glm::vec3(0.0);
-const int tileW = 10. * 100.;
+const int tileW = 1000.;
+bool wireframe = false;
 
 void setPos(int row, int col, glm::vec2 pos)
 {
@@ -193,6 +195,12 @@ int main()
 
 	while(!glfwWindowShouldClose(window))
 	{
+		if(wireframe) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 		float currentFrame = static_cast<float>( glfwGetTime() );
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;

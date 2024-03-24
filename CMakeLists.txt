@@ -36,7 +36,7 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-  set(LIBS glfw3 opengl32 assimp freetype irrKlang)
+  set(LIBS glfw3 opengl32 assimp freetype irrKlang FreeImage)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 elseif(UNIX AND NOT APPLE)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
@@ -199,6 +199,7 @@ set(9.other
     9.1.infiniteGrid
     9.2.water
     9.3.Terrain
+    9.4.HeightMapGenerator
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
