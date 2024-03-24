@@ -200,6 +200,8 @@ set(9.other
     9.2.water
     9.3.Terrain
     9.4.HeightMapGenerator
+   # 9.5.VolumetricClouds
+    9.6.Skybox
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
