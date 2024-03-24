@@ -62,13 +62,13 @@ else()
 endif(WIN32)
 
 set(CHAPTERS
-    1.getting_started
-    2.lighting
-    3.model_loading
-    4.advanced_opengl
-    5.advanced_lighting
-    6.pbr
-    7.in_practice
+    #1.getting_started
+    #2.lighting
+    #3.model_loading
+    #4.advanced_opengl
+    #5.advanced_lighting
+    #6.pbr
+    #7.in_practice
     9.other
 )
 
@@ -200,7 +200,7 @@ set(9.other
     9.2.water
     9.3.Terrain
     9.4.HeightMapGenerator
-   # 9.5.VolumetricClouds
+    9.5.VolumetricClouds
     9.6.Skybox
 )
 
