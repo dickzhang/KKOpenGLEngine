@@ -202,6 +202,7 @@ set(9.other
     9.4.HeightMapGenerator
     9.5.VolumetricClouds
     9.6.SkySun
+    9.7.LensFlare
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
