@@ -24,6 +24,8 @@ Camera camera(glm::vec3(0.0f,0.0f,0.0f));
 float lastX = WindowSize::SCR_WIDTH/2.0;
 float lastY = WindowSize::SCR_HEIGHT/2.0;
 bool firstMouse = true;
+float mouselastx = lastX;
+float mouselasty = lastY;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -101,6 +103,8 @@ void processInput(GLFWwindow* window)
 void framebuffer_size_callback(GLFWwindow* window,int width,int height)
 {
 	glViewport(0,0,width,height);
+	WindowSize::SCR_WIDTH = width;
+	WindowSize::SCR_HEIGHT = height;
 }
 
 void mouse_callback(GLFWwindow* window,double xposIn,double yposIn)
@@ -118,14 +122,19 @@ void mouse_callback(GLFWwindow* window,double xposIn,double yposIn)
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
+		mouselastx = lastX;
+		mouselasty = lastY;
 	}
 
 	float xoffset = xpos-lastX;
 	float yoffset = lastY-ypos; // reversed since y-coordinates go from bottom to top
+	mouselastx += xoffset;
+	mouselasty += yoffset;
+	mouseUV = glm::vec2(mouselastx/WindowSize::SCR_WIDTH,mouselasty/WindowSize::SCR_WIDTH);
 
 	lastX = xpos;
 	lastY = ypos;
-	mouseUV = glm::vec2(xpos/WindowSize::SCR_WIDTH,ypos/WindowSize::SCR_WIDTH);
+
 	camera.ProcessMouseMovement(xoffset,yoffset);
 }
 
