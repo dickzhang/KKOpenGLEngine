@@ -18,8 +18,6 @@ public:
 	struct Vertex
 	{
 		glm::vec3 Pos;
-		glm::vec3 Normal;
-		glm::vec4 Color;
 		glm::vec2 TCoords;
 	};
 public:
@@ -39,7 +37,7 @@ private:
 private:
 
 	int HorizontalResolution = 32;
-	int VerticalResolution = 32;
+	int VerticalResolution = 8;
 	float TexturePercentage = 1.0;
 	float SpherePercentage = 2.0;
 	float Radius = 500.0;
@@ -63,6 +61,5 @@ private:
 	float m_glare2Intensity = 0.15;
 	glm::vec3 m_GroundColor = { 0.6,0.6,0.6};
 	bool m_changed = true;
-	glm::mat4 m_ModelMatrix= glm::mat4(1.0);
 	glm::vec3 m_LightDirection = { -0.5,0.5,1.0 };
 };

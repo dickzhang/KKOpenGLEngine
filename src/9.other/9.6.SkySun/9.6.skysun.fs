@@ -11,8 +11,8 @@ uniform vec4 uGlare2;
 uniform vec3 ugroundColor;
 
 in vec2 varTexCoord0;
-in vec4 varColor;
 in vec4 varWorldPos;
+
 out vec4 FragColor;
 
 const float gamma = 2.2;
@@ -62,5 +62,5 @@ void main(void)
 		uSunSize
 	);
 	vec3 result = mix(skyColor, sRGB(ugroundColor), pow(smoothstep(0.0,-0.025, viewDir.y), 0.2));
-	FragColor = vec4(result, 1.0);
+	FragColor = vec4(result,1.0);
 }

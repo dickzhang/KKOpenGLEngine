@@ -24,7 +24,7 @@ void SkySun::Init()
 
 void SkySun::InitShader()
 {
-	m_Shader.LoadShader("9.7.skysun.vs","9.7.skysun.fs");
+	m_Shader.LoadShader("9.6.skysun.vs","9.6.skysun.fs");
 }
 
 void SkySun::PreRender(Camera* camera)
@@ -38,9 +38,11 @@ void SkySun::Render(Camera* camera)
 	float cameraFar = 1000.0f;
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f),(float)WindowSize::SCR_WIDTH/(float)WindowSize::SCR_HEIGHT,cameraNear,cameraFar);
 	glm::mat4 view = camera->GetViewMatrix();
+	glm::mat4 m_ModelMatrix = glm::mat4(1.0);
 	m_Shader.use();
 	m_Shader.setMat4("uMvpMatrix",projection*view*m_ModelMatrix);
 	m_Shader.setMat4("uWorldMatrix",m_ModelMatrix);
+
 	m_Shader.setVec3("uLightDirection",m_LightDirection);
 	m_Shader.setVec3("uCamPosition",camera->Position);
 	m_Shader.setVec3("ugroundColor",m_GroundColor);
@@ -129,13 +131,9 @@ void SkySun::GenerateMesh()
 		for(int j = 0; j<=VerticalResolution; ++j)
 		{
 			Vertex vtx;
-			vtx.Color = glm::vec4(255,255,255,255);
-			vtx.Normal = glm::vec3(0.0f,-1.f,0.0f);
 			const float cosEr = Radius*cosf(elevation);
 			vtx.Pos = glm::vec3(cosEr*sinA,Radius*sinf(elevation),cosEr*cosA);
 			vtx.TCoords = glm::vec2(tcU,j*tcV);
-			vtx.Normal = -vtx.Pos;
-			glm::normalize(vtx.Normal);
 			m_Vertexlist.push_back(vtx);
 			elevation -= elevation_step;
 		}
@@ -175,14 +173,10 @@ void SkySun::CreateVAO()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,m_Indexlist.size()*sizeof(unsigned int),m_Indexlist.data(),GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,12*sizeof(float),(void*)0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(float),(void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,12*sizeof(float),(void*)(3*sizeof(float)));
+	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(float),(void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2,4,GL_FLOAT,GL_FALSE,12*sizeof(float),(void*)(6*sizeof(float)));
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3,2,GL_FLOAT,GL_FALSE,12*sizeof(float),(void*)(10*sizeof(float)));
-	glEnableVertexAttribArray(2);
 	glBindVertexArray(0);
 }
 
