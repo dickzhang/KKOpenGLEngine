@@ -19,6 +19,7 @@ endif(WIN32)
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
+add_definitions(-DROOT_PATH=\"${CMAKE_SOURCE_DIR}\")
 # find the required packages
 find_package(GLM REQUIRED)
 message(STATUS "GLM included at ${GLM_INCLUDE_DIR}")
@@ -69,7 +70,8 @@ set(CHAPTERS
     #5.advanced_lighting
     #6.pbr
     #7.in_practice
-    9.other
+    #9.other
+    10.TileBaseRendering
 )
 
 set(1.getting_started
@@ -203,6 +205,10 @@ set(9.other
     9.5.VolumetricClouds
     9.6.SkySun
     9.7.LensFlare
+)
+
+set(10.TileBaseRendering
+    Engine
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
