@@ -11,18 +11,18 @@
 
 extern ModuleBase* CreateAppModule();
 
-void framebuffer_size_callback(GLFWwindow* window,int width,int height);
-void mouse_callback(GLFWwindow* window,double xpos,double ypos);
-void scroll_callback(GLFWwindow* window,double xoffset,double yoffset);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 unsigned int WindowSize::SCR_WIDTH = 1280;
 unsigned int WindowSize::SCR_HEIGHT = 720;
 
 // camera
-Camera camera(glm::vec3(0.0f,100.0f,-24.0f));
-float lastX = WindowSize::SCR_WIDTH/2.0;
-float lastY = WindowSize::SCR_HEIGHT/2.0;
+Camera camera(glm::vec3(0.0f, 100.0f, -24.0f));
+float lastX = WindowSize::SCR_WIDTH / 2.0;
+float lastY = WindowSize::SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 float mouselastx = lastX;
 float mouselasty = lastY;
@@ -34,43 +34,46 @@ glm::vec2 mouseUV = glm::vec2(0.5);
 int main()
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
-	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES,4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	if constexpr (Common::MSAA_ENABLED)
+	{
+		glfwWindowHint(GLFW_SAMPLES, Common::MSAA_SAMPLES);
+	}
 
 #ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-	GLFWwindow* window = glfwCreateWindow(WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT,"LearnOpenGL",NULL,NULL);
+	GLFWwindow* window = glfwCreateWindow(WindowSize::SCR_WIDTH, WindowSize::SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	glfwMakeContextCurrent(window);
-	if(window==NULL)
+	if (window == NULL)
 	{
-		std::cout<<"Failed to create GLFW window"<<std::endl;
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
-	glfwSetCursorPosCallback(window,mouse_callback);
-	glfwSetScrollCallback(window,scroll_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
-	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		std::cout<<"Failed to initialize GLAD"<<std::endl;
+		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
 	auto appModule = CreateAppModule();
 	appModule->Init();
-	while(!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
-		deltaTime = currentFrame-lastFrame;
+		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		processInput(window);
 
 		appModule->PreRender(&camera);
-		appModule->Render(&camera,mouseUV);
+		appModule->Render(&camera, mouseUV);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -84,37 +87,39 @@ int main()
 
 void processInput(GLFWwindow* window)
 {
-	camera.MovementSpeed = 50.;
-	if(glfwGetKey(window,GLFW_KEY_ESCAPE)==GLFW_PRESS)
-		glfwSetWindowShouldClose(window,true);
-	if(glfwGetKey(window,GLFW_KEY_W)==GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD,deltaTime);
-	if(glfwGetKey(window,GLFW_KEY_S)==GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD,deltaTime);
-	if(glfwGetKey(window,GLFW_KEY_A)==GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT,deltaTime);
-	if(glfwGetKey(window,GLFW_KEY_D)==GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT,deltaTime);
+	camera.MovementSpeed = 200.;
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-void framebuffer_size_callback(GLFWwindow* window,int width,int height)
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0,0,width,height);
+	glViewport(0, 0, width, height);
 	WindowSize::SCR_WIDTH = width;
 	WindowSize::SCR_HEIGHT = height;
+
+	std::cout << width << "======" << height << std::endl;
 }
 
-void mouse_callback(GLFWwindow* window,double xposIn,double yposIn)
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
-	if(glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_RIGHT)!=GLFW_PRESS)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
 	{
 		lastX = xpos;
 		lastY = ypos;
 		return;
 	}
-	if(firstMouse)
+	if (firstMouse)
 	{
 		lastX = xpos;
 		lastY = ypos;
@@ -123,19 +128,19 @@ void mouse_callback(GLFWwindow* window,double xposIn,double yposIn)
 		mouselasty = lastY;
 	}
 
-	float xoffset = xpos-lastX;
-	float yoffset = lastY-ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 	mouselastx += xoffset;
 	mouselasty += yoffset;
-	mouseUV = glm::vec2(mouselastx/WindowSize::SCR_WIDTH,mouselasty/WindowSize::SCR_WIDTH);
+	mouseUV = glm::vec2(mouselastx / WindowSize::SCR_WIDTH, mouselasty / WindowSize::SCR_WIDTH);
 
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.ProcessMouseMovement(xoffset,yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-void scroll_callback(GLFWwindow* window,double xoffset,double yoffset)
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }

@@ -23,16 +23,16 @@ TileBaseForwardPlus::~TileBaseForwardPlus()
 		delete m_PointLightBuffer;
 		m_PointLightBuffer = nullptr;
 	}
+	if (m_DepthRenderTexture)
+	{
+		delete m_DepthRenderTexture;
+		m_DepthRenderTexture = nullptr;
+	}
 }
 
 void TileBaseForwardPlus::Init()
 {
-	depthTexture.InitForWrite(WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT,GL_DEPTH_COMPONENT,2);
-	depthTexture.BindTexture();
-	framebuffer.Init(true);
-	framebuffer.Bind();
-	framebuffer.AttachTexture(GL_DEPTH_ATTACHMENT,depthTexture.GetId(),GL_TEXTURE_2D);
-	FBO::BindDefault();
+	m_DepthRenderTexture = new RenderTexture(WindowSize::SCR_WIDTH, WindowSize::SCR_HEIGHT,true);
 
 	m_LightGenerator = new LightGenerator();
 	int workGroupsX = WindowSize::SCR_WIDTH/TILE_SIZE;
@@ -60,14 +60,17 @@ void TileBaseForwardPlus::Render(Camera* camera,glm::vec2 mouseuv)
 	m_RenderCamera = camera;
 	if(!m_RenderCamera)return;
 	m_Projection = glm::perspective(glm::radians(60.0f),(float)WindowSize::SCR_WIDTH/(float)WindowSize::SCR_HEIGHT,m_CameraNear,m_CameraFar);
-	//m_View =m_RenderCamera->GetViewMatrix();
-	m_View = 
+	m_View =m_RenderCamera->GetViewMatrix();
+
+	//此配置很重要,不然会出现,采样错误的问题,将深度限制在[0,1]之间
+	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	if constexpr (Common::MSAA_ENABLED)
 	{
-		0.0,0.0,-1.0,0.0,
-		0.0,1.0,0.0,0.0,
-		1.0,0.0,0.0,0.0,
-		24.0,-100.0,0.0,1.0
-	};
+		glEnable(GL_MULTISAMPLE);
+	}
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	PreDepthPass();
 	LightCulling();
 	FinalShading();
@@ -75,23 +78,18 @@ void TileBaseForwardPlus::Render(Camera* camera,glm::vec2 mouseuv)
 
 void TileBaseForwardPlus::PreDepthPass()
 {
-	framebuffer.Bind();
-	depthTexture.BindTexture();
-	glViewport(0,0,WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT);
-	glEnable(GL_DEPTH_TEST);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
+	m_DepthRenderTexture->Bind();
 	glm::mat4 m_ModelMatrix = glm::mat4(1.0);
 	m_DepthShader.use();
 	m_DepthShader.setMat4("modelViewProj",m_Projection*m_View*m_ModelMatrix);
 	m_Model.Draw(m_DepthShader);
-	glBindFramebuffer(GL_FRAMEBUFFER,0);
+	m_DepthRenderTexture->Unbind();
 }
 
 void TileBaseForwardPlus::LightCulling()
 {
 	m_LigthCullingShader.use();
-	m_LigthCullingShader.setSampler2D("depthMap",depthTexture.GetId(),2);
+	m_LigthCullingShader.setSampler2D("depthMap", m_DepthRenderTexture->GetDepthTexture(),0);
 	m_LigthCullingShader.setMat4("invViewProj",glm::inverse(m_Projection*m_View));
 	m_LigthCullingShader.setInt("numLights",LightGenerator::NUM_OF_LIGHTS);
 	m_LigthCullingShader.setInt("screenWidth",(int)WindowSize::SCR_WIDTH);

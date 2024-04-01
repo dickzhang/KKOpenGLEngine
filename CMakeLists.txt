@@ -184,27 +184,27 @@ set(7.in_practice
 )
 
 set(GUEST_ARTICLES
-	8.guest/2020/oit
-	8.guest/2020/skeletal_animation
-	8.guest/2021/1.scene/1.scene_graph
-	8.guest/2021/1.scene/2.frustum_culling
-	8.guest/2021/2.csm
-	8.guest/2021/3.tessellation/terrain_gpu_dist
-	8.guest/2021/3.tessellation/terrain_cpu_src
-	8.guest/2021/4.dsa
-	8.guest/2022/5.computeshader_helloworld
-	8.guest/2022/6.physically_based_bloom
-	8.guest/2022/7.area_lights/1.area_light
-	8.guest/2022/7.area_lights/2.multiple_area_lights
+	#8.guest/2020/oit
+	#8.guest/2020/skeletal_animation
+	#8.guest/2021/1.scene/1.scene_graph
+	#8.guest/2021/1.scene/2.frustum_culling
+	#8.guest/2021/2.csm
+	#8.guest/2021/3.tessellation/terrain_gpu_dist
+	#8.guest/2021/3.tessellation/terrain_cpu_src
+	#8.guest/2021/4.dsa
+	#8.guest/2022/5.computeshader_helloworld
+	#8.guest/2022/6.physically_based_bloom
+	#8.guest/2022/7.area_lights/1.area_light
+	#8.guest/2022/7.area_lights/2.multiple_area_lights
 )
 set(9.other
-    9.1.infiniteGrid
-    9.2.water
-    9.3.Terrain
-    9.4.HeightMapGenerator
-    9.5.VolumetricClouds
-    9.6.SkySun
-    9.7.LensFlare
+    #9.1.infiniteGrid
+    #9.2.water
+    #9.3.Terrain
+    #9.4.HeightMapGenerator
+    #9.5.VolumetricClouds
+    #9.6.SkySun
+    #9.7.LensFlare
     9.8.TileBaseForwardRendering
 )
 

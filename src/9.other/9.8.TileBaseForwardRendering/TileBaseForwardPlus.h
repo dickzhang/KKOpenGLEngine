@@ -13,8 +13,7 @@
 #include "ModuleBase.h"
 #include "LightGenerator.h"
 #include "PointLightBuffer.h"
-#include "FBO.h"
-#include "DepthTexture.h"
+#include "RenderTexture.h"
 
 class TileBaseForwardPlus :public ModuleBase
 {
@@ -50,10 +49,9 @@ private:
 	glm::mat4 m_Projection = glm::mat4(1.0);
 	glm::mat4 m_View = glm::mat4(1.0);
 	float m_CameraNear = 0.1f;
-	float m_CameraFar = 2000.0f;
+	float m_CameraFar = 10000.0f;
 	int TILE_SIZE = 16;
 	int LIGHTS_PER_TILE =63;
 
-	FBO framebuffer;
-	DepthTexture depthTexture;
+	RenderTexture* m_DepthRenderTexture=nullptr;
 };
