@@ -197,13 +197,13 @@ set(GUEST_ARTICLES
 	#8.guest/2022/7.area_lights/2.multiple_area_lights
 )
 set(9.other
-    #9.1.infiniteGrid
-    #9.2.water
-    #9.3.Terrain
-    #9.4.HeightMapGenerator
-    #9.5.VolumetricClouds
-    #9.6.SkySun
-    #9.7.LensFlare
+    9.1.infiniteGrid
+    9.2.water
+    9.3.Terrain
+    9.4.HeightMapGenerator
+    9.5.VolumetricClouds
+    9.6.SkySun
+    9.7.LensFlare
     9.8.TileBaseForwardRendering
     9.9.TileBaseForwardCSMFXAA
 )

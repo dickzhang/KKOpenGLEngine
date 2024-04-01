@@ -37,6 +37,7 @@ private:
 	void PreDepthPass();
 	void LightCulling();
 	void FinalShading();
+	void WindowSizeChanged(int width,int height);
 private:
 
 	Shader m_DepthShader;

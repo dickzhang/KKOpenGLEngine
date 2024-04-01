@@ -13,6 +13,7 @@ public:
 	virtual void PreRender(Camera* camera);
 	virtual void Render(Camera* camera,glm::vec2 mouseuv);
 	virtual void Exit();
+	virtual void WindowSizeChanged(int width, int height);
 private:
 
 };

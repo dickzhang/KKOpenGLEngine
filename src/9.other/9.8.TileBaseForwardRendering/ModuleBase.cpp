@@ -24,3 +24,7 @@ void ModuleBase::Render(Camera* camera,glm::vec2 mouseuv)
 void ModuleBase::Exit()
 {
 }
+
+void ModuleBase::WindowSizeChanged(int width, int height)
+{
+}

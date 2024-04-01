@@ -29,7 +29,7 @@ float mouselasty = lastY;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
+ModuleBase* m_ModuleBase = nullptr;
 glm::vec2 mouseUV = glm::vec2(0.5);
 int main()
 {
@@ -63,8 +63,8 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	auto appModule = CreateAppModule();
-	appModule->Init();
+	m_ModuleBase = CreateAppModule();
+	m_ModuleBase->Init();
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -72,15 +72,15 @@ int main()
 		lastFrame = currentFrame;
 		processInput(window);
 
-		appModule->PreRender(&camera);
-		appModule->Render(&camera, mouseUV);
+		m_ModuleBase->PreRender(&camera);
+		m_ModuleBase->Render(&camera, mouseUV);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	appModule->Exit();
-	delete appModule;
-	appModule = nullptr;
+	m_ModuleBase->Exit();
+	delete m_ModuleBase;
+	m_ModuleBase = nullptr;
 	glfwTerminate();
 	return 0;
 }
@@ -105,8 +105,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 	WindowSize::SCR_WIDTH = width;
 	WindowSize::SCR_HEIGHT = height;
-
 	std::cout << width << "======" << height << std::endl;
+	if (m_ModuleBase)
+	{
+		m_ModuleBase->WindowSizeChanged(width, height);
+	}
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)

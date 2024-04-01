@@ -45,6 +45,11 @@ RenderTexture::RenderTexture(int W_, int H_, const int nColorAttachments)
 	delete colorAttachmentsFlag;
 }
 
+RenderTexture::~RenderTexture()
+{
+	std::cout << "~RenderTexture" << std::endl;
+}
+
 void RenderTexture::Bind()
 {
 	BindFrameBuffer(this->FBO, this->W, this->H);

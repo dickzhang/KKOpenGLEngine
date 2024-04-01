@@ -8,7 +8,7 @@ public:
 	RenderTexture(int W, int H);
 	RenderTexture(int W, int H, bool isOnlyDepty);
 	RenderTexture(int W, int H, int numColorAttachments);
-
+	~RenderTexture();
 	unsigned int getColorAttachmentTex(int i);
 	unsigned int GetDepthTexture();
 	void Bind();

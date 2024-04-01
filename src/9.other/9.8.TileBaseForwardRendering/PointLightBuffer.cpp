@@ -20,7 +20,6 @@ void PointLightBuffer::Init(const std::vector<PointLight>& lights,int numTiles,i
 {
 	lights_.Init(lights.data(),GL_SHADER_STORAGE_BUFFER,lights.size(),1);
 	lights_.UnbindBuffer();
-
 	int size = numTiles*maxLigthsPerTile;
 	std::vector<int> initInd(size,-1);
 	lightIndexes_.Init(initInd.data(),GL_SHADER_STORAGE_BUFFER,size,2);
