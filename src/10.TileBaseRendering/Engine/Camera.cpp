@@ -13,7 +13,7 @@ static float pitch = 0.f;
 static float yaw = 0.f;
 static bool firstMouse = true;
 static bool frontChanged = true;
-static float fov = 45.f;
+static float fov = 60.f;
 static bool fovChanged = true;
 
 static void mouseCallback(GLFWwindow* window, double xpos, double ypos)
@@ -78,7 +78,7 @@ void Camera::Init(glm::vec3 position)
     worldUp_ = glm::vec3(0.0f, 1.0f,  0.0f);
 
     const auto window = Window::Get();
-    glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
+    //glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
     glfwSetScrollCallback(window.GetGLFWwindow(), scrollCallback);
     ProcessInputForMovement(0);
 }

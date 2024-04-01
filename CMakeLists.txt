@@ -70,7 +70,7 @@ set(CHAPTERS
     #5.advanced_lighting
     #6.pbr
     #7.in_practice
-    #9.other
+    9.other
     10.TileBaseRendering
 )
 
@@ -205,6 +205,7 @@ set(9.other
     9.5.VolumetricClouds
     9.6.SkySun
     9.7.LensFlare
+    9.8.TileBaseForwardRendering
 )
 
 set(10.TileBaseRendering

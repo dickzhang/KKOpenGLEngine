@@ -36,7 +36,7 @@ void GraphicsEngine::Run()
 			Rebuild();
 		}
 		lastFrame = currentFrame;
-		csmDepthPrepass_.Draw();
+		//csmDepthPrepass_.Draw();
 
 		if(EngineUtils::UseLightCulling)
 		{
@@ -64,10 +64,12 @@ void GraphicsEngine::Run()
 
 void GraphicsEngine::PerformLightCulling()
 {
+	auto project=camera_.GetProjectionMatrix();
+	auto view=camera_.GetViewMatrix();
 	graphicsUtils_.GetPointLightBuffer().Bind();
 	depthPrepass_.Draw();
 	computeShader_.UseProgram();
-	computeShader_.SetUniformValue("invViewProj",glm::inverse(camera_.GetProjectionMatrix()*camera_.GetViewMatrix()));
+	computeShader_.SetUniformValue("invViewProj",glm::inverse(project*view));
 	depthPrepass_.GetDepthMap().BindTexture();
 	computeShader_.Execute();
 	computeShader_.Wait();

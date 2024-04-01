@@ -1,0 +1,186 @@
+#version 450 core
+
+#define TILE_SIZE 16
+#define LIGHT_ID_END -2
+#define LIGHTS_PER_TILE 63
+#define UINT_MAX 4294967295
+
+layout(local_size_x = TILE_SIZE, local_size_y = TILE_SIZE, local_size_z = 1) in;
+
+struct PointLight
+{
+    vec4 position;
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+    float constant;
+    float linear;
+    float quadratic;
+    float radius;
+};
+
+uniform sampler2D depthMap;
+uniform mat4 invViewProj;
+uniform int numLights;
+uniform int screenWidth;
+uniform int screenHeight;
+
+layout(std430, binding = 1) readonly buffer LightBuffer
+{
+    PointLight data [];
+}
+lightBuffer;
+
+layout(std430, binding = 2) writeonly buffer VisibleLightIndicesBuffer
+{
+    int data[];
+} visibleLightIndicesBuffer;
+
+shared uint visibleLightNum;
+shared uint minDepth;
+shared uint maxDepth;
+shared vec4 frustum[6];
+shared int visibleLightIndices[LIGHTS_PER_TILE];
+shared vec2 screenBounds;
+
+vec4 CreateFrustumPlane(vec3 p0, vec3 p1, vec3 p2)
+{
+	const vec3 v = p1 - p0;
+	const vec3 u = p2 - p0;
+	const vec3 normal = normalize(cross(u, v));
+	vec4 fp = vec4(normal, 0.0f);
+	fp.w = -dot(fp.xyz, p0);
+	return fp;
+}
+
+void CreateViewFrustum(vec3 points[8], inout vec4 planes[6])
+{
+    vec3 farBottomLeft = points[0];
+    vec3 farBottomRight = points[1];
+    vec3 farTopLeft = points[2];
+    vec3 farTopRight = points[3];
+    vec3 nearBottomLeft = points[4];
+    vec3 nearBottomRight = points[5];
+    vec3 nearTopLeft = points[6];
+    vec3 nearTopRight = points[7];
+    
+    planes[0] = CreateFrustumPlane(nearTopRight, nearTopLeft, farTopRight); // top
+	planes[1] = CreateFrustumPlane(nearBottomLeft, nearBottomRight, farBottomLeft); //bottom
+	planes[2] = CreateFrustumPlane(nearBottomLeft, farBottomLeft, nearTopLeft); // left
+	planes[3] = CreateFrustumPlane(nearTopRight, farTopRight, nearBottomRight); // right
+	planes[4] = CreateFrustumPlane(farBottomRight, farTopRight, farBottomLeft); //near
+	planes[5] = CreateFrustumPlane(nearBottomRight, nearBottomLeft, nearTopRight); // far
+}
+
+
+void main()
+{
+    uint tileId = gl_WorkGroupID.y * gl_NumWorkGroups.x + gl_WorkGroupID.x;
+    uint localThreadId = gl_LocalInvocationIndex;
+    uint globalThreadId = tileId * TILE_SIZE + localThreadId;
+
+    if (localThreadId == 0) 
+    {
+        minDepth= 0xffffffff;
+        maxDepth = 0;
+        visibleLightNum = 0;
+        screenBounds =  vec2(screenWidth - 1, screenHeight - 1);
+    }
+
+    barrier();
+    vec2 text = gl_GlobalInvocationID.xy / screenBounds;
+	float depth = texture(depthMap, text).r;
+    uint intDepth = floatBitsToUint(depth);
+
+    atomicMin(minDepth, intDepth);
+    atomicMax(maxDepth, intDepth);
+
+    barrier();
+
+    if (localThreadId == 0)
+    {
+		const vec2 tileSizeNormalized = ( vec2(TILE_SIZE, TILE_SIZE) /screenBounds);
+		
+        // [0] - bottom left
+        // [1] - bottom right
+        // [2] - top left
+        // [3] - top right
+		vec2 pointsClipSpace[4];
+		pointsClipSpace[0] = gl_WorkGroupID.xy * tileSizeNormalized;
+		pointsClipSpace[1] = (gl_WorkGroupID.xy + vec2(1.0, 0.0)) * tileSizeNormalized;
+		pointsClipSpace[2] = (gl_WorkGroupID.xy + vec2(0.0, 1.0)) * tileSizeNormalized;
+		pointsClipSpace[3] = (gl_WorkGroupID.xy + vec2(1.0, 1.0)) * tileSizeNormalized;
+
+		// [-1, 1]
+		for (uint i = 0; i < 4; i++)
+		{
+			pointsClipSpace[i] = pointsClipSpace[i] * vec2(2.0f, 2.0f) - vec2(1.0f, 1.0f);
+		}
+
+        float minDepthFloat = uintBitsToFloat(minDepth);
+		float maxDepthFloat = uintBitsToFloat(maxDepth);
+
+		vec3 pointsWorldSpace[8];
+		for (uint i = 0; i < 4; i++)
+		{
+			vec4 clipPos = invViewProj * vec4(pointsClipSpace[i], minDepthFloat, 1.0);
+			pointsWorldSpace[i] = clipPos.xyz / clipPos.w;
+		}
+		for (uint i = 0; i < 4; i++)
+		{
+			vec4 clipPos = invViewProj * vec4(pointsClipSpace[i], maxDepthFloat, 1.0);
+            pointsWorldSpace[i + 4] = clipPos.xyz / clipPos.w;
+		}
+
+		CreateViewFrustum(pointsWorldSpace, frustum);        
+    }
+
+    barrier();
+
+	uint threadCount = TILE_SIZE * TILE_SIZE;
+	uint passCount = (numLights + threadCount - 1) / threadCount;
+	for (uint i = 0; i < passCount; i++) {
+
+		uint lightId = i * threadCount + gl_LocalInvocationIndex;
+        if (lightId >= numLights)
+        {
+            break;
+        }
+
+        vec4 pos = lightBuffer.data[lightId].position;
+        float r = lightBuffer.data[lightId].radius;
+
+        bool isInsideFrustum = true;
+        for (int i = 0; i < 6; i++)
+        {
+            float distance = dot(vec4(pos.xyz, 1.0), frustum[i]) + r;
+            if (distance <= 0.0)
+            {
+                isInsideFrustum = false;
+                break;
+            }
+        }
+
+        if (isInsideFrustum)
+        {
+            uint offset = atomicAdd(visibleLightNum, 1);
+            visibleLightIndices[offset] = int(lightId);
+        }
+    }
+
+    barrier();
+
+    if (localThreadId == 0)
+    {
+        uint offset = tileId * LIGHTS_PER_TILE;
+		for (uint i = 0; i < visibleLightNum; i++)
+        {
+			visibleLightIndicesBuffer.data[offset + i] = visibleLightIndices[i];
+		}
+
+		if (visibleLightNum != LIGHTS_PER_TILE)
+        {
+			visibleLightIndicesBuffer.data[offset + visibleLightNum] = LIGHT_ID_END;
+		}
+    }
+}

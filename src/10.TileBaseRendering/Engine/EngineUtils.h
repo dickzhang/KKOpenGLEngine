@@ -8,14 +8,14 @@ class EngineUtils
 public:
 
 	static constexpr bool DEBUG_MODE_ENABLED = true;
-	static constexpr int WINDOW_WIDTH = 2048;
-	static constexpr int WINDOW_HEIGHT = 1536;
+	static constexpr int WINDOW_WIDTH = 1280;
+	static constexpr int WINDOW_HEIGHT = 720;
 
 	static constexpr int CSM_SHADOW_RES = 2048;
 	static constexpr bool MSAA_ENABLED = true;
 	static constexpr int MSAA_SAMPLES = 4;
 
-	static constexpr int LIGHTS_PER_TILE = 1024;
+	static constexpr int LIGHTS_PER_TILE = 63;
 	static constexpr int TILE_SIZE = 16;
 	static constexpr int LIGHT_ID_END = -2;
 
