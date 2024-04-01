@@ -18,13 +18,18 @@ static bool fovChanged = true;
 
 static void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        return;
+    }
     if (firstMouse)
     {
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
     }
-  
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos; 
     lastX = xpos;
@@ -78,7 +83,7 @@ void Camera::Init(glm::vec3 position)
     worldUp_ = glm::vec3(0.0f, 1.0f,  0.0f);
 
     const auto window = Window::Get();
-    //glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
+    glfwSetCursorPosCallback(window.GetGLFWwindow(), mouseCallback);
     glfwSetScrollCallback(window.GetGLFWwindow(), scrollCallback);
     ProcessInputForMovement(0);
 }

@@ -71,7 +71,6 @@ set(CHAPTERS
     #6.pbr
     #7.in_practice
     9.other
-    10.TileBaseRendering
 )
 
 set(1.getting_started
@@ -206,6 +205,7 @@ set(9.other
     #9.6.SkySun
     #9.7.LensFlare
     9.8.TileBaseForwardRendering
+    9.9.TileBaseForwardCSMFXAA
 )
 
 set(10.TileBaseRendering

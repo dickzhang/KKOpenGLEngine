@@ -36,7 +36,7 @@ void GraphicsEngine::Run()
 			Rebuild();
 		}
 		lastFrame = currentFrame;
-		//csmDepthPrepass_.Draw();
+		csmDepthPrepass_.Draw();
 
 		if(EngineUtils::UseLightCulling)
 		{
