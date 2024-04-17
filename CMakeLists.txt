@@ -206,6 +206,7 @@ set(9.other
     9.7.LensFlare
     9.8.TileBaseForwardRendering
     9.9.TileBaseForwardCSMFXAA
+    9.10.VirtualTexture
 )
 
 set(10.TileBaseRendering
