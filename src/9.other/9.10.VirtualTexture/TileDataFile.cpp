@@ -1,9 +1,9 @@
 #include "TileDataFile.h"
 
-TileDataFile::TileDataFile(const bx::FilePath& filename, VirtualTextureInfo* _info, bool _readWrite) : m_info(_info)
+TileDataFile::TileDataFile(const std::string& filename, VirtualTextureInfo* _info, bool _readWrite) : m_info(_info)
 {
 	const char* access = _readWrite ? "w+b" : "rb";
-	m_file = fopen(filename.getCPtr(), access);
+	m_file = fopen(filename.c_str(), access);
 	m_size = m_info->GetPageSize() * m_info->GetPageSize() * s_channelCount;
 }
 

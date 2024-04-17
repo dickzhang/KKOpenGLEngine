@@ -16,7 +16,7 @@ class PageLoader
 public:
 	struct ReadState
 	{
-		Page						m_page;
+		Page m_page;
 		std::vector<uint8_t>	m_data;
 	};
 

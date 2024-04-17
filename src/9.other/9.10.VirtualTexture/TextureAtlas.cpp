@@ -27,7 +27,7 @@ void TextureAtlas::setUploadsPerFrame(int count)
 	m_stagingPool.grow(count);
 }
 
-void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, bgfx::ViewId blitViewId)
+void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short  blitViewId)
 {
 	// Get next staging texture to write to
 	auto writer = m_stagingPool.getTexture();
@@ -52,7 +52,7 @@ void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, bgfx::ViewId blitViewId)
 	bgfx::blit(blitViewId, m_texture, 0, xpos, ypos, 0, writer, 0, 0, 0, 0, pagesize, pagesize);
 }
 
-bgfx::TextureHandle TextureAtlas::getTexture()
+unsigned short TextureAtlas::getTexture()
 {
 	return m_texture;
 }

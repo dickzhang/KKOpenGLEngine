@@ -17,7 +17,7 @@ FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _heigh
 	clear();
 
 	// Initialize feedback frame buffer
-	bgfx::TextureHandle feedbackFrameBufferTextures[] =
+	unsigned short feedbackFrameBufferTextures[] =
 	{
 		bgfx::createTexture2D(uint16_t(m_width), uint16_t(m_height), false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_RT),
 		bgfx::createTexture2D(uint16_t(m_width), uint16_t(m_height), false, 1, bgfx::TextureFormat::D32F,  BGFX_TEXTURE_RT),
@@ -39,7 +39,7 @@ void FeedbackBuffer::clear()
 	bx::memSet(&m_requests[0], 0, sizeof(int) * m_indexer->getCount());
 }
 
-void FeedbackBuffer::copy(bgfx::ViewId viewId)
+void FeedbackBuffer::copy(unsigned short  viewId)
 {
 	m_lastStagingTexture = m_stagingPool.getTexture();
 	// Copy feedback buffer render target to staging texture
@@ -105,7 +105,7 @@ const std::vector<int>& FeedbackBuffer::getRequests() const
 	return m_requests;
 }
 
-bgfx::FrameBufferHandle FeedbackBuffer::getFrameBuffer()
+unsigned short  FeedbackBuffer::getFrameBuffer()
 {
 	return m_feedbackFrameBuffer;
 }

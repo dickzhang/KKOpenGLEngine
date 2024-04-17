@@ -103,3 +103,6 @@ struct Memory
 	uint8_t* data; //!< Pointer to data.
 	uint32_t size; //!< Data size.
 };
+
+static const int s_channelCount = 4;
+static const int s_tileFileDataOffset = sizeof(VirtualTextureInfo);

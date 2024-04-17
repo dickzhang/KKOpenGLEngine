@@ -6,12 +6,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include "Common.h"
+#include <iostream>
 #include "VTCommon.h"
 
 class TileDataFile
 {
 public:
-	TileDataFile(const bx::FilePath& filename, VirtualTextureInfo* _info, bool _readWrite = false);
+	TileDataFile(const std::string& filename, VirtualTextureInfo* _info, bool _readWrite = false);
 	~TileDataFile();
 
 	void readInfo();

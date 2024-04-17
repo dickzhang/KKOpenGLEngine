@@ -134,12 +134,12 @@ bool VirtualTexture::isColorMipLevelsEnabled() const
 	return m_loader->m_colorMipLevels;
 }
 
-bgfx::TextureHandle VirtualTexture::getAtlastTexture()
+unsigned short VirtualTexture::getAtlastTexture()
 {
 	return m_atlas->getTexture();
 }
 
-bgfx::TextureHandle VirtualTexture::getPageTableTexture()
+unsigned short VirtualTexture::getPageTableTexture()
 {
 	return m_pageTable->getTexture();
 }
@@ -149,7 +149,7 @@ void VirtualTexture::clear()
 	m_cache->clear();
 }
 
-void VirtualTexture::update(const tinystl::vector<int>& requests, bgfx::ViewId blitViewId)
+void VirtualTexture::update(const std::vector<int>& requests, unsigned short  blitViewId)
 {
 	m_pagesToLoad.clear();
 

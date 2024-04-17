@@ -31,11 +31,11 @@ public:
 	void enableColorMipLevels(bool enable);
 	bool isColorMipLevelsEnabled() const;
 
-	bgfx::TextureHandle getAtlastTexture();
-	bgfx::TextureHandle getPageTableTexture();
+	unsigned short getAtlastTexture();
+	unsigned short getPageTableTexture();
 
 	void clear();
-	void update(const std::vector<int>& requests, bgfx::ViewId blitViewId);
+	void update(const std::vector<int>& requests, unsigned short  blitViewId);
 
 	void setUniforms();
 
@@ -58,10 +58,10 @@ private:
 
 	int m_mipBias;
 
-	bgfx::UniformHandle u_vt_settings_1;
-	bgfx::UniformHandle u_vt_settings_2;
-	bgfx::UniformHandle s_vt_page_table;
-	bgfx::UniformHandle s_vt_texture_atlas;
+	unsigned short u_vt_settings_1;
+	unsigned short u_vt_settings_2;
+	unsigned short s_vt_page_table;
+	unsigned short s_vt_texture_atlas;
 
 	static bx::AllocatorI* s_allocator;
 };

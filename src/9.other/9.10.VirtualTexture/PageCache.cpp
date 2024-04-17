@@ -38,7 +38,7 @@ bool PageCache::touch(Page page)
 }
 
 // Schedule a load if not already loaded or loading
-bool PageCache::request(Page request, bgfx::ViewId blitViewId)
+bool PageCache::request(Page request, unsigned short  blitViewId)
 {
 	m_blitViewId = blitViewId;
 	if (m_loading.find(request) == m_loading.end())
@@ -93,7 +93,7 @@ void PageCache::loadComplete(Page page, uint8_t* data)
 
 		if (m_current == m_count * m_count)
 		{
-			bx::debugPrintf("Atlas is full!");
+			std::cout << "Atlas is full!" << std::endl;
 		}
 	}
 

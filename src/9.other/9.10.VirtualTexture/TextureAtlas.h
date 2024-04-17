@@ -7,6 +7,7 @@
 #include <vector>
 #include "Common.h"
 #include "VTCommon.h"
+#include "StagingPool.h"
 
 class TextureAtlas
 {
@@ -15,12 +16,12 @@ public:
 	~TextureAtlas();
 
 	void setUploadsPerFrame(int count);
-	void uploadPage(TPoint pt, uint8_t* data, bgfx::ViewId blitViewId);
+	void uploadPage(TPoint pt, uint8_t* data, unsigned short  blitViewId);
 
-	bgfx::TextureHandle getTexture();
+	unsigned short getTexture();
 
 private:
 	VirtualTextureInfo* m_info;
-	bgfx::TextureHandle  m_texture;
-	StagingPool          m_stagingPool;
+	unsigned short m_texture;
+	StagingPool m_stagingPool;
 };

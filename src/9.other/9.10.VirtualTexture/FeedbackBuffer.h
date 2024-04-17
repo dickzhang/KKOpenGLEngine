@@ -15,10 +15,8 @@ class FeedbackBuffer
 public:
 	FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _height);
 	~FeedbackBuffer();
-
 	void clear();
-
-	void copy(bgfx::ViewId viewId);
+	void copy(unsigned short  viewId);
 	void download();
 
 	// This function validates the pages and adds the page's parents
@@ -26,7 +24,7 @@ public:
 	void addRequestAndParents(Page request);
 
 	const std::vector<int>& getRequests() const;
-	bgfx::FrameBufferHandle getFrameBuffer();
+	unsigned short  getFrameBuffer();
 
 	int getWidth() const;
 	int getHeight() const;
@@ -38,9 +36,9 @@ private:
 	int m_width = 0;
 	int m_height = 0;
 
-	StagingPool				m_stagingPool;
-	bgfx::TextureHandle		m_lastStagingTexture;
-	bgfx::FrameBufferHandle m_feedbackFrameBuffer;
+	StagingPool	m_stagingPool;
+	unsigned short 	m_lastStagingTexture;
+	unsigned short  m_feedbackFrameBuffer;
 
 	// This stores the pages by index.  The int value is number of requests.
 	std::vector<int>		m_requests;

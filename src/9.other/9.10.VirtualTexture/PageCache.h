@@ -18,7 +18,7 @@ class PageCache
 public:
 	PageCache(TextureAtlas* _atlas, PageLoader* _loader, int _count);
 	bool touch(Page page);
-	bool request(Page request, bgfx::ViewId blitViewId);
+	bool request(Page request, unsigned short blitViewId);
 	void clear();
 	void loadComplete(Page page, uint8_t* data);
 
@@ -49,5 +49,5 @@ private:
 	std::vector<LruPage>		m_lru;
 	std::unordered_set<Page>	m_loading;
 
-	bgfx::ViewId m_blitViewId;
+	unsigned short  m_blitViewId;
 };
