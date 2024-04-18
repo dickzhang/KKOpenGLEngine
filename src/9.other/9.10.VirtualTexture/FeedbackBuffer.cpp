@@ -2,18 +2,19 @@
 
 // FeedbackBuffer
 FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _height)
-	: m_info(_info)
-	, m_width(_width)
-	, m_height(_height)
-	, m_stagingPool(_width, _height, 1, true)
+	:m_stagingPool(_width, _height, 1, true)
 {
+	m_info = _info;
+	m_width = _width;
+	m_height = _height;
+
 	// Setup classes
-	m_indexer = BX_NEW(VirtualTexture::getAllocator(), PageIndexer)(m_info);
+	m_indexer = new PageIndexer(m_info);
 	m_requests.resize(m_indexer->getCount());
 
 	// Initialize and clear buffers
 	m_downloadBuffer.resize(m_width * m_height * s_channelCount);
-	bx::memSet(&m_downloadBuffer[0], 0, m_width * m_height * s_channelCount);
+	std::memset(&m_downloadBuffer[0], 0, m_width * m_height * s_channelCount);
 	clear();
 
 	// Initialize feedback frame buffer
@@ -24,19 +25,23 @@ FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _heigh
 	};
 
 	m_feedbackFrameBuffer = bgfx::createFrameBuffer(BX_COUNTOF(feedbackFrameBufferTextures), feedbackFrameBufferTextures, true);
-	m_lastStagingTexture = { bgfx::kInvalidHandle };
+	m_lastStagingTexture = 0;
 }
 
 FeedbackBuffer::~FeedbackBuffer()
 {
-	bx::deleteObject(VirtualTexture::getAllocator(), m_indexer);
-	bgfx::destroy(m_feedbackFrameBuffer);
+	if (m_indexer)
+	{
+		delete m_indexer;
+		m_indexer = nullptr;
+	}
+	glDeleteFramebuffers(1, &m_feedbackFrameBuffer);
 }
 
 void FeedbackBuffer::clear()
 {
 	// Clear Table
-	bx::memSet(&m_requests[0], 0, sizeof(int) * m_indexer->getCount());
+	std::memset(&m_requests[0], 0, sizeof(int) * m_indexer->getCount());
 }
 
 void FeedbackBuffer::copy(unsigned short  viewId)
@@ -50,7 +55,7 @@ void FeedbackBuffer::copy(unsigned short  viewId)
 void FeedbackBuffer::download()
 {
 	// Check if there's an already rendered feedback buffer available
-	if (m_lastStagingTexture.idx == bgfx::kInvalidHandle)
+	if (m_lastStagingTexture == 0)
 	{
 		return;
 	}

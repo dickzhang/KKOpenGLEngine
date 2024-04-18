@@ -40,7 +40,7 @@ void SimpleImage::copy(TPoint dest_offset, SimpleImage& src, Rect src_rect)
 
 void SimpleImage::clear(uint8_t clearValue)
 {
-	glm::memSet(&m_data[0], clearValue, m_width * m_height * m_channelCount);
+	std::memset(&m_data[0], clearValue, m_width * m_height * m_channelCount);
 }
 
 void SimpleImage::fill(Rect rect, uint8_t r, uint8_t g, uint8_t b, uint8_t a)

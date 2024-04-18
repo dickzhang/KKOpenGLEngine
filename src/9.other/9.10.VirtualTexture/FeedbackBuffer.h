@@ -30,16 +30,15 @@ public:
 	int getHeight() const;
 
 private:
-	VirtualTextureInfo* m_info;
-	PageIndexer* m_indexer;
+	VirtualTextureInfo* m_info = nullptr;
+	PageIndexer* m_indexer = nullptr;
 
 	int m_width = 0;
 	int m_height = 0;
 
 	StagingPool	m_stagingPool;
-	unsigned short 	m_lastStagingTexture;
-	unsigned short  m_feedbackFrameBuffer;
-
+	unsigned short 	m_lastStagingTexture = 0;
+	GLuint  m_feedbackFrameBuffer = 0;
 	// This stores the pages by index.  The int value is number of requests.
 	std::vector<int>		m_requests;
 	std::vector<uint8_t>	m_downloadBuffer;

@@ -16,7 +16,6 @@ void TileDataFile::readInfo()
 {
 	fseek(m_file, 0, SEEK_SET);
 	auto ret = fread(m_info, sizeof(*m_info), 1, m_file);
-	BX_UNUSED(ret);
 	m_size = m_info->GetPageSize() * m_info->GetPageSize() * s_channelCount;
 }
 
@@ -24,19 +23,16 @@ void TileDataFile::writeInfo()
 {
 	fseek(m_file, 0, SEEK_SET);
 	auto ret = fwrite(m_info, sizeof(*m_info), 1, m_file);
-	BX_UNUSED(ret);
 }
 
 void TileDataFile::readPage(int index, uint8_t* data)
 {
 	fseek(m_file, m_size * index + s_tileFileDataOffset, SEEK_SET);
 	auto ret = fread(data, m_size, 1, m_file);
-	BX_UNUSED(ret);
 }
 
 void TileDataFile::writePage(int index, uint8_t* data)
 {
 	fseek(m_file, m_size * index + s_tileFileDataOffset, SEEK_SET);
 	auto ret = fwrite(data, m_size, 1, m_file);
-	BX_UNUSED(ret);
 }

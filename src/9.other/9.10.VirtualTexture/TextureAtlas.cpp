@@ -19,7 +19,7 @@ TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadspe
 
 TextureAtlas::~TextureAtlas()
 {
-	bgfx::destroy(m_texture);
+	glDeleteTextures(1, &m_texture);
 }
 
 void TextureAtlas::setUploadsPerFrame(int count)

@@ -4,6 +4,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <learnopengl/filesystem.h>
+#include <learnopengl/shader_t.h>
+#include <learnopengl/camera.h>
+#include <learnopengl/model.h>
 #include <vector>
 #include "Common.h"
 #include "VTCommon.h"
@@ -36,12 +40,9 @@ public:
 
 	void clear();
 	void update(const std::vector<int>& requests, unsigned short  blitViewId);
-
-	void setUniforms();
-
-	static void setAllocator(bx::AllocatorI* allocator);
-	static bx::AllocatorI* getAllocator();
-
+	void LoadShader();
+	void setVTUniforms();
+	void setMipUniforms();
 private:
 	TileDataFile* m_tileDataFile;
 	VirtualTextureInfo* m_info;
@@ -50,18 +51,14 @@ private:
 	TextureAtlas* m_atlas;
 	PageLoader* m_loader;
 	PageCache* m_cache;
-
 	int m_atlasCount;
 	int m_uploadsPerFrame;
-
 	std::vector<PageCount> m_pagesToLoad;
-
 	int m_mipBias;
-
 	unsigned short u_vt_settings_1;
 	unsigned short u_vt_settings_2;
 	unsigned short s_vt_page_table;
 	unsigned short s_vt_texture_atlas;
-
-	static bx::AllocatorI* s_allocator;
+	Shader m_vtShader;
+	Shader m_mipShader;
 };

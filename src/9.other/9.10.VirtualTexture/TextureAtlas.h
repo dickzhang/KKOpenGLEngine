@@ -22,6 +22,6 @@ public:
 
 private:
 	VirtualTextureInfo* m_info;
-	unsigned short m_texture;
+	GLuint m_texture;
 	StagingPool m_stagingPool;
 };

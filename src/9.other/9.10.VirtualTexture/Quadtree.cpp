@@ -16,7 +16,8 @@ Quadtree::~Quadtree()
 	{
 		if (m_children[i] != nullptr)
 		{
-			bx::deleteObject(VirtualTexture::getAllocator(), m_children[i]);
+			delete m_children[i];
+			m_children[i] = nullptr;
 		}
 	}
 }
@@ -39,7 +40,7 @@ void Quadtree::add(Page request, TPoint mapping)
 				// Create a new one if needed
 				if (node->m_children[i] == nullptr)
 				{
-					node->m_children[i] = BX_NEW(VirtualTexture::getAllocator(), Quadtree)(rect, node->m_level - 1);
+					node->m_children[i] = new Quadtree(rect, node->m_level - 1);
 					node = node->m_children[i];
 					break;
 				}
@@ -63,7 +64,7 @@ void Quadtree::remove(Page request)
 
 	if (node != nullptr)
 	{
-		bx::deleteObject(VirtualTexture::getAllocator(), node->m_children[index]);
+		delete node->m_children[index];
 		node->m_children[index] = nullptr;
 	}
 }

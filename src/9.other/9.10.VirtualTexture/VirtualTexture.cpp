@@ -1,45 +1,59 @@
 #include "VirtualTexture.h"
 
+
 // VirtualTexture
 VirtualTexture::VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo* _info, int _atlassize, int _uploadsperframe, int _mipBias)
-	: m_tileDataFile(_tileDataFile)
-	, m_info(_info)
-	, m_uploadsPerFrame(_uploadsperframe)
-	, m_mipBias(_mipBias)
-
 {
-	m_atlasCount = _atlassize / m_info->GetPageSize();
+	m_tileDataFile = _tileDataFile;
+	m_info = _info;
+	m_uploadsPerFrame = _uploadsperframe;
+	m_mipBias = _mipBias;
 
+	m_atlasCount = _atlassize / m_info->GetPageSize();
 	// Setup indexer
-	m_indexer = BX_NEW(VirtualTexture::getAllocator(), PageIndexer)(m_info);
+	m_indexer = new PageIndexer(m_info);
 	m_pagesToLoad.reserve(m_indexer->getCount());
 
 	// Setup classes
-	m_atlas = BX_NEW(VirtualTexture::getAllocator(), TextureAtlas)(m_info, m_atlasCount, m_uploadsPerFrame);
-	m_loader = BX_NEW(VirtualTexture::getAllocator(), PageLoader)(m_tileDataFile, m_indexer, m_info);
-	m_cache = BX_NEW(VirtualTexture::getAllocator(), PageCache)(m_atlas, m_loader, m_atlasCount);
-	m_pageTable = BX_NEW(VirtualTexture::getAllocator(), PageTable)(m_cache, m_info, m_indexer);
-
-	// Create uniforms
-	u_vt_settings_1 = bgfx::createUniform("u_vt_settings_1", bgfx::UniformType::Vec4);
-	u_vt_settings_2 = bgfx::createUniform("u_vt_settings_2", bgfx::UniformType::Vec4);
-	s_vt_page_table = bgfx::createUniform("s_vt_page_table", bgfx::UniformType::Sampler);
-	s_vt_texture_atlas = bgfx::createUniform("s_vt_texture_atlas", bgfx::UniformType::Sampler);
+	m_atlas = new TextureAtlas(m_info, m_atlasCount, m_uploadsPerFrame);
+	m_loader = new PageLoader(m_tileDataFile, m_indexer, m_info);
+	m_cache = new PageCache(m_atlas, m_loader, m_atlasCount);
+	m_pageTable = new PageTable(m_cache, m_info, m_indexer);
 }
 
 VirtualTexture::~VirtualTexture()
 {
-	// Destroy
-	bx::deleteObject(VirtualTexture::getAllocator(), m_indexer);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_atlas);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_loader);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_cache);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_pageTable);
-	// Destroy all uniforms and textures
-	bgfx::destroy(u_vt_settings_1);
-	bgfx::destroy(u_vt_settings_2);
-	bgfx::destroy(s_vt_page_table);
-	bgfx::destroy(s_vt_texture_atlas);
+	if (m_indexer)
+	{
+		delete m_indexer;
+		m_indexer = nullptr;
+	}
+	if (m_atlas)
+	{
+		delete m_atlas;
+		m_atlas = nullptr;
+	}
+	if (m_loader)
+	{
+		delete m_loader;
+		m_loader = nullptr;
+	}
+	if (m_cache)
+	{
+		delete m_cache;
+		m_cache = nullptr;
+	}
+	if (m_pageTable)
+	{
+		delete m_pageTable;
+		m_pageTable = nullptr;
+	}
+}
+
+void VirtualTexture::LoadShader()
+{
+	m_vtShader.loadShader("vs_vt_generic.vs","fs_vt_unlit.fs");
+	m_mipShader.loadShader("vs_vt_generic.vs","fs_vt_mip.fs");
 }
 
 int VirtualTexture::getMipBias() const
@@ -49,45 +63,33 @@ int VirtualTexture::getMipBias() const
 
 void VirtualTexture::setMipBias(int value)
 {
-	m_mipBias = bx::max(0, value);
+	m_mipBias = glm::max(0, value);
 }
 
-void VirtualTexture::setUniforms()
+void VirtualTexture::setVTUniforms()
 {
-	struct
-	{
-		struct
-		{
-			float VirtualTextureSize;
-			float ooAtlasScale;
-			float BorderScale;
-			float BorderOffset;
-		} m_settings_1;
-
-		struct
-		{
-			float MipBias;
-			float PageTableSize;
-			float unused1;
-			float unused2;
-		} m_settings_2;
-
-	} uniforms;
-
+	//todo 这里要和shader里面的uniform名称对应上
 	int pagesize = m_info->GetPageSize();
-	uniforms.m_settings_1.VirtualTextureSize = (float)m_info->m_virtualTextureSize;
-	uniforms.m_settings_1.ooAtlasScale = 1.0f / (float)m_atlasCount;
-	uniforms.m_settings_1.BorderScale = (float)((pagesize - 2.0f * m_info->m_borderSize) / pagesize);
-	uniforms.m_settings_1.BorderOffset = (float)m_info->m_borderSize / (float)pagesize;
-	uniforms.m_settings_2.MipBias = (float)m_mipBias;
-	uniforms.m_settings_2.PageTableSize = (float)m_info->GetPageTableSize();
-	uniforms.m_settings_2.unused1 = uniforms.m_settings_2.unused2 = 0.0f;
+	m_vtShader.setFloat("VirtualTextureSize", (float)m_info->m_virtualTextureSize);
+	m_vtShader.setFloat("ooAtlasScale", 1.0f / (float)m_atlasCount);
+	m_vtShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info->m_borderSize) / pagesize));
+	m_vtShader.setFloat("BorderOffset", (float)m_info->m_borderSize / (float)pagesize);
+	m_vtShader.setFloat("MipBias", (float)m_mipBias);
+	m_vtShader.setFloat("PageTableSize", (float)m_info->GetPageTableSize());
+	m_vtShader.setSampler2D("s_vt_page_table", m_pageTable->getTexture(),0);
+	m_vtShader.setSampler2D("s_vt_texture_atlas", m_atlas->getTexture(),1);
+}
 
-	bgfx::setUniform(u_vt_settings_1, &uniforms.m_settings_1);
-	bgfx::setUniform(u_vt_settings_2, &uniforms.m_settings_2);
-
-	bgfx::setTexture(0, s_vt_page_table, m_pageTable->getTexture());
-	bgfx::setTexture(1, s_vt_texture_atlas, m_atlas->getTexture());
+void VirtualTexture::setMipUniforms()
+{
+	//todo 这里要和shader里面的uniform名称对应上
+	int pagesize = m_info->GetPageSize();
+	m_mipShader.setFloat("VirtualTextureSize", (float)m_info->m_virtualTextureSize);
+	m_mipShader.setFloat("ooAtlasScale", 1.0f / (float)m_atlasCount);
+	m_mipShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info->m_borderSize) / pagesize));
+	m_mipShader.setFloat("BorderOffset", (float)m_info->m_borderSize / (float)pagesize);
+	m_mipShader.setFloat("MipBias", (float)m_mipBias);
+	m_mipShader.setFloat("PageTableSize", (float)m_info->GetPageTableSize());
 }
 
 void VirtualTexture::setUploadsPerFrame(int count)
@@ -177,16 +179,15 @@ void VirtualTexture::update(const std::vector<int>& requests, unsigned short  bl
 	if (touched < m_atlasCount * m_atlasCount)
 	{
 		// sort by low res to high res and number of requests
-		bx::quickSort(m_pagesToLoad.begin(), uint32_t(m_pagesToLoad.size()), sizeof(vt::PageCount)
-			, [](const void* _a, const void* _b) -> int32_t
+		std::sort(m_pagesToLoad.begin(), m_pagesToLoad.end(),[](const void* _a, const void* _b) -> int32_t
 		{
-			const vt::PageCount& lhs = *(const vt::PageCount*)(_a);
-			const vt::PageCount& rhs = *(const vt::PageCount*)(_b);
+			const PageCount& lhs = *(const PageCount*)(_a);
+			const PageCount& rhs = *(const PageCount*)(_b);
 			return lhs.compareTo(rhs);
 		});
 
 		// if more pages than will fit in memory or more than update per frame drop high res pages with lowest use count
-		int loadcount = bx::min(bx::min((int)m_pagesToLoad.size(), m_uploadsPerFrame), m_atlasCount * m_atlasCount);
+		int loadcount = glm::min(glm::min((int)m_pagesToLoad.size(), m_uploadsPerFrame), m_atlasCount * m_atlasCount);
 		for (int i = 0; i < loadcount; ++i)
 			m_cache->request(m_pagesToLoad[i].m_page, blitViewId);
 	}
@@ -196,19 +197,6 @@ void VirtualTexture::update(const std::vector<int>& requests, unsigned short  bl
 		// We can adjust the mip bias to make it all fit. This solves the problem of page cache thrashing
 		--m_mipBias;
 	}
-
 	// Update the page table
 	m_pageTable->update(blitViewId);
-}
-
-bx::AllocatorI* VirtualTexture::s_allocator = nullptr;
-
-void VirtualTexture::setAllocator(bx::AllocatorI* allocator)
-{
-	s_allocator = allocator;
-}
-
-bx::AllocatorI* VirtualTexture::getAllocator()
-{
-	return s_allocator;
 }

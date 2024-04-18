@@ -19,9 +19,9 @@ public:
 	void fill(Rect rect, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 	static void mipmap(uint8_t* source, int size, int channels, uint8_t* dest);
 
-private:
+public:
+	std::vector<uint8_t> m_data;
 	int	m_width = 0;
 	int	m_height = 0;
 	int	m_channelCount = 0;
-	std::vector<uint8_t> m_data;
 };

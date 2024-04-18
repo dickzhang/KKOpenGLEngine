@@ -16,6 +16,18 @@
 class PageCache
 {
 public:
+	struct LruPage
+	{
+		Page	m_page;
+		TPoint	m_point;
+
+		bool operator==(const Page& other) const
+		{
+			return m_page == other;
+		}
+	};
+
+public:
 	PageCache(TextureAtlas* _atlas, PageLoader* _loader, int _count);
 	bool touch(Page page);
 	bool request(Page request, unsigned short blitViewId);
@@ -29,25 +41,10 @@ public:
 private:
 	TextureAtlas* m_atlas;
 	PageLoader* m_loader;
-
 	int m_count;
-
-	struct LruPage
-	{
-		Page	m_page;
-		TPoint	m_point;
-
-		bool operator==(const Page& other) const
-		{
-			return m_page == other;
-		}
-	};
-
 	int m_current; // This is used for generating the texture atlas indices before the lru is full
-
 	std::unordered_set<Page>    m_lru_used;
 	std::vector<LruPage>		m_lru;
 	std::unordered_set<Page>	m_loading;
-
 	unsigned short  m_blitViewId;
 };

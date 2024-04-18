@@ -1,46 +1,60 @@
 #include "TileGenerator.h"
-
+#include "VirtualTexture.h"
+#include <stdio.h>
+#include <string.h>
 // TileGenerator
 TileGenerator::TileGenerator(VirtualTextureInfo* _info)
-	: m_info(_info)
-	, m_indexer(nullptr)
-	, m_tileDataFile(nullptr)
-	, m_sourceImage(nullptr)
-	, m_page1Image(nullptr)
-	, m_page2Image(nullptr)
-	, m_2xtileImage(nullptr)
-	, m_4xtileImage(nullptr)
-	, m_tileImage(nullptr)
 {
+	m_info=_info;
 	m_tilesize = m_info->m_tileSize;
 	m_pagesize = m_info->GetPageSize();
 }
 
 TileGenerator::~TileGenerator()
 {
-	if (m_sourceImage != nullptr)
+	m_sourceImage.release();
+
+	if (m_indexer)
 	{
-		bimg::imageFree(m_sourceImage);
+		delete m_indexer;
+		m_indexer = nullptr;
 	}
-
-	bx::deleteObject(VirtualTexture::getAllocator(), m_indexer);
-
-	bx::deleteObject(VirtualTexture::getAllocator(), m_page1Image);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_page2Image);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_2xtileImage);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_4xtileImage);
-	bx::deleteObject(VirtualTexture::getAllocator(), m_tileImage);
+	if (m_page1Image)
+	{
+		delete m_page1Image;
+		m_page1Image = nullptr;
+	}
+	if (m_page2Image)
+	{
+		delete m_page2Image;
+		m_page2Image = nullptr;
+	}
+	if (m_2xtileImage)
+	{
+		delete m_2xtileImage;
+		m_2xtileImage = nullptr;
+	}
+	if (m_4xtileImage)
+	{
+		delete m_4xtileImage;
+		m_4xtileImage = nullptr;
+	}
+	if (m_tileImage)
+	{
+		delete m_tileImage;
+		m_tileImage = nullptr;
+	}
 }
 
-bool TileGenerator::generate(const bx::FilePath& _filePath)
+bool TileGenerator::generate(const std::string& _filePath)
 {
-	const bx::StringView baseName = _filePath.getBaseName();
+	const std::string baseName = _filePath;
 
 	// Generate cache filename
 	char tmp[256];
-	bx::snprintf(tmp, sizeof(tmp), "%.*s.vt", baseName.getLength(), baseName.getPtr());
+	std::snprintf(tmp, sizeof(tmp), "%.*s.vt", baseName.length(), baseName.c_str());
 
-	bx::FilePath cacheFilePath("temp");
+	std::string cacheFilePath="temp";
 	cacheFilePath.join(tmp);
 
 	// Check if tile file already exist
@@ -51,22 +65,20 @@ bool TileGenerator::generate(const bx::FilePath& _filePath)
 		if (bx::open(&fileReader, cacheFilePath, &err))
 		{
 			bx::close(&fileReader);
-
-			bx::debugPrintf("Tile data file '%s' already exists. Skipping generation.\n", cacheFilePath.getCPtr());
+			std::cout << "Tile data file '%s' already exists. Skipping generation.\n" << cacheFilePath.c_str() << std::endl;
 			return true;
 		}
 	}
 
 	// Read image
 	{
-		bx::debugPrintf("Reading image '%s'.\n", _filePath.getCPtr());
-
+		std::cout << "Reading image '%s'.\n" << _filePath.c_str() << std::endl;
 		bx::Error err;
 		bx::FileReader fileReader;
 
 		if (!bx::open(&fileReader, _filePath, &err))
 		{
-			bx::debugPrintf("Image open failed'%s'.\n", _filePath.getCPtr());
+			std::cout << "Image open failed'%s'.\n" << _filePath.c_str() << std::endl;
 			return false;
 		}
 
@@ -74,7 +86,7 @@ bool TileGenerator::generate(const bx::FilePath& _filePath)
 
 		if (0 == size)
 		{
-			bx::debugPrintf("Image '%s' size is 0.\n", _filePath.getCPtr());
+			std::cout << "Image '%s' size is 0.\n" << _filePath.c_str() << std::endl;
 			return false;
 		}
 
@@ -85,7 +97,7 @@ bool TileGenerator::generate(const bx::FilePath& _filePath)
 
 		if (!err.isOk())
 		{
-			bx::debugPrintf("Image read failed'%s'.\n", _filePath.getCPtr());
+			std::cout <<"Image read failed'%s'.\n" << _filePath.c_str() << std::endl;
 			bx::free(VirtualTexture::getAllocator(), rawImage);
 			return false;
 		}
@@ -95,30 +107,30 @@ bool TileGenerator::generate(const bx::FilePath& _filePath)
 
 		if (!err.isOk())
 		{
-			bx::debugPrintf("Image parse failed'%s'.\n", _filePath.getCPtr());
+			std::cout << "Image parse failed'%s'.\n" << _filePath.c_str() << std::endl;
 			return false;
 		}
 	}
 
 	// Setup
-	m_info->m_virtualTextureSize = int(m_sourceImage->m_width);
-	m_indexer = BX_NEW(VirtualTexture::getAllocator(), PageIndexer)(m_info);
+	m_info->m_virtualTextureSize = m_sourceImage.m_width;
+	m_indexer = new PageIndexer(m_info);
 
 	// Open tile data file
-	m_tileDataFile = BX_NEW(VirtualTexture::getAllocator(), TileDataFile)(cacheFilePath, m_info, true);
-	m_page1Image = BX_NEW(VirtualTexture::getAllocator(), SimpleImage)(m_pagesize, m_pagesize, s_channelCount, 0xff);
-	m_page2Image = BX_NEW(VirtualTexture::getAllocator(), SimpleImage)(m_pagesize, m_pagesize, s_channelCount, 0xff);
-	m_tileImage = BX_NEW(VirtualTexture::getAllocator(), SimpleImage)(m_tilesize, m_tilesize, s_channelCount, 0xff);
-	m_2xtileImage = BX_NEW(VirtualTexture::getAllocator(), SimpleImage)(m_tilesize * 2, m_tilesize * 2, s_channelCount, 0xff);
-	m_4xtileImage = BX_NEW(VirtualTexture::getAllocator(), SimpleImage)(m_tilesize * 4, m_tilesize * 4, s_channelCount, 0xff);
+	m_tileDataFile = new  TileDataFile(cacheFilePath, m_info, true);
+	m_page1Image = new SimpleImage(m_pagesize, m_pagesize, s_channelCount, 0xff);
+	m_page2Image = new SimpleImage(m_pagesize, m_pagesize, s_channelCount, 0xff);
+	m_tileImage = new SimpleImage(m_tilesize, m_tilesize, s_channelCount, 0xff);
+	m_2xtileImage = new SimpleImage(m_tilesize * 2, m_tilesize * 2, s_channelCount, 0xff);
+	m_4xtileImage = new SimpleImage(m_tilesize * 4, m_tilesize * 4, s_channelCount, 0xff);
 
 	// Generate tiles
-	bx::debugPrintf("Generating tiles\n");
+	std::cout <<"Generating tiles\n" << std::endl;
 	auto mipcount = m_indexer->getMipCount();
 	for (int i = 0; i < mipcount; ++i)
 	{
 		int count = (m_info->m_virtualTextureSize / m_tilesize) >> i;
-		bx::debugPrintf("Generating Mip:%d Count:%dx%d\n", i, count, count);
+		std::cout << "Generating Mip:%d Count:%dx%d\n" << i<< count<< count << std::endl;
 		for (int y = 0; y < count; ++y)
 		{
 			for (int x = 0; x < count; ++x)
@@ -131,13 +143,17 @@ bool TileGenerator::generate(const bx::FilePath& _filePath)
 		}
 	}
 
-	bx::debugPrintf("Finising\n");
+	std::cout <<"Finising\n" << std::endl;
 	// Write header
 	m_tileDataFile->writeInfo();
 	// Close tile file
-	bx::deleteObject(VirtualTexture::getAllocator(), m_tileDataFile);
+	if (m_tileDataFile)
+	{
+		delete m_tileDataFile;
+		m_tileDataFile = nullptr;
+	}
 	m_tileDataFile = nullptr;
-	bx::debugPrintf("Done!\n");
+	std::cout << "Done!\n" << std::endl;
 	return true;
 }
 
@@ -148,17 +164,17 @@ void TileGenerator::CopyTile(SimpleImage& image, Page request)
 		int x = request.m_x * m_tilesize - m_info->m_borderSize;
 		int y = request.m_y * m_tilesize - m_info->m_borderSize;
 		// Copy sub-image with border
-		auto srcPitch = m_sourceImage->m_width * s_channelCount;
-		auto src = (uint8_t*)m_sourceImage->m_data;
+		auto srcPitch = m_sourceImage.m_width * s_channelCount;
+		auto src = (uint8_t*)m_sourceImage.m_data;
 		auto dstPitch = image.m_width * image.m_channelCount;
 		auto dst = &image.m_data[0];
 		for (int iy = 0; iy < m_pagesize; ++iy)
 		{
-			int ry = bx::clamp(y + iy, 0, (int)m_sourceImage->m_height - 1);
+			int ry = glm::clamp(y + iy, 0, (int)m_sourceImage.m_height - 1);
 			for (int ix = 0; ix < m_pagesize; ++ix)
 			{
-				int rx = bx::clamp(x + ix, 0, (int)m_sourceImage->m_width - 1);
-				bx::memCopy(&dst[iy * dstPitch + ix * image.m_channelCount], &src[ry * srcPitch + rx * s_channelCount], image.m_channelCount);
+				int rx = glm::clamp(x + ix, 0, (int)m_sourceImage.m_width - 1);
+				std::memcpy(&dst[iy * dstPitch + ix * image.m_channelCount], &src[ry * srcPitch + rx * s_channelCount], image.m_channelCount);
 			}
 		}
 	}
@@ -179,13 +195,13 @@ void TileGenerator::CopyTile(SimpleImage& image, Page request)
 				Page page = { xpos + x - 1, ypos + y - 1, mip };
 
 				// Wrap so we get the border sections of other pages
-				page.m_x = (int)bx::mod((float)page.m_x, (float)size);
-				page.m_y = (int)bx::mod((float)page.m_y, (float)size);
+				page.m_x = (int)glm::mod((float)page.m_x, (float)size);
+				page.m_y = (int)glm::mod((float)page.m_y, (float)size);
 
 				m_tileDataFile->readPage(m_indexer->getIndexFromPage(page), &m_page2Image->m_data[0]);
 
 				Rect src_rect = { m_info->m_borderSize, m_info->m_borderSize, m_tilesize, m_tilesize };
-				Point dst_offset = { x * m_tilesize, y * m_tilesize };
+				TPoint dst_offset = { x * m_tilesize, y * m_tilesize };
 
 				m_4xtileImage->copy(dst_offset, *m_page2Image, src_rect);
 			}

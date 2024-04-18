@@ -19,7 +19,7 @@ public:
 		Page m_page;
 		std::vector<uint8_t>	m_data;
 	};
-
+public:
 	PageLoader(TileDataFile* _tileDataFile, PageIndexer* _indexer, VirtualTextureInfo* _info);
 	void submit(Page request);
 	void loadPage(ReadState& state);
@@ -27,11 +27,10 @@ public:
 	void copyBorder(uint8_t* image);
 	void copyColor(uint8_t* image, Page request);
 
+public:
 	std::function<void(Page, uint8_t*)> loadComplete;
-
 	bool m_colorMipLevels;
 	bool m_showBorders;
-
 private:
 	TileDataFile* m_tileDataFile;
 	PageIndexer* m_indexer;
