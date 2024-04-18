@@ -19,27 +19,23 @@ public:
 	void copy(unsigned short  viewId);
 	void download();
 
-	// This function validates the pages and adds the page's parents
-	// We do this so that we can fall back to them if we run out of memory
+	//这个函数检测页面并添加页面的父级。这样做是为了在内存耗尽时可以返回到它们
 	void addRequestAndParents(Page request);
 
 	const std::vector<int>& getRequests() const;
-	unsigned short  getFrameBuffer();
+	unsigned short getFrameBuffer();
 
 	int getWidth() const;
 	int getHeight() const;
-
 private:
 	VirtualTextureInfo* m_info = nullptr;
 	PageIndexer* m_indexer = nullptr;
-
 	int m_width = 0;
 	int m_height = 0;
-
 	StagingPool	m_stagingPool;
 	unsigned short 	m_lastStagingTexture = 0;
 	GLuint  m_feedbackFrameBuffer = 0;
-	// This stores the pages by index.  The int value is number of requests.
+	//它按索引存储页面。int值是请求的数量。
 	std::vector<int>		m_requests;
 	std::vector<uint8_t>	m_downloadBuffer;
 };

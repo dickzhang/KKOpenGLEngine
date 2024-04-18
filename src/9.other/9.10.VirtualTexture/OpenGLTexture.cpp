@@ -118,6 +118,13 @@ unsigned int OpenGLTexture::generateTexture2D(TextureInfo info, const Memory* _m
 	return tex_output;
 }
 
+void OpenGLTexture::updateTexture2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, const void* pixels)
+{
+	glBindTexture(GL_TEXTURE_2D, target);
+	glTexSubImage2D(GL_TEXTURE_2D, level, xoffset, yoffset, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 unsigned int OpenGLTexture::generateTexture3D(int w, int h, int d)
 {
 	unsigned int tex_output;

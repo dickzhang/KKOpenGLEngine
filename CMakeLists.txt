@@ -100,6 +100,7 @@ set(1.getting_started
     7.4.camera_class
     8.1.drawIndirect
     8.2.MultidrawIndirect
+    8.3.TransformFeedBack
     8.4.drawWithOneVBO
     8.5.BindlessTexture
 )

@@ -17,5 +17,6 @@ public:
 	static unsigned int generateTexture3D(int w, int h, int d);
 	static void bindTexture2D(unsigned int tex, int unit = 0);
 	static unsigned int generateTexture2D(TextureInfo info, const Memory* _mem = NULL);
+	static void updateTexture2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, const void* pixels);
 };
 

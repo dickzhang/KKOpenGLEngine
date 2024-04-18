@@ -18,20 +18,16 @@ public:
 	struct ImageContainer
 	{
 		void* m_data = nullptr;
-		EPixelFormat m_format;
-		uint32_t m_size;
-		uint32_t m_offset;
-		uint32_t m_width;
-		uint32_t m_height;
-		uint32_t m_depth;
-		uint16_t m_numLayers;
-		uint8_t  m_numMips;
-		bool     m_hasAlpha;
-		bool     m_cubeMap;
-		bool     m_ktx;
-		bool     m_ktxLE;
-		bool     m_pvr3;
-		bool     m_srgb;
+		EPixelFormat m_format= EPixelFormat::PF_A8R8G8B8;
+		uint32_t m_size=0;
+		uint32_t m_offset=0;
+		uint32_t m_width=0;
+		uint32_t m_height=0;
+		uint32_t m_depth=0;
+		uint16_t m_numLayers=1;
+		uint8_t  m_numMips=0;
+		bool     m_hasAlpha=false;
+		bool     m_srgb=false;
 
 		void release()
 		{
@@ -50,7 +46,6 @@ public:
 
 private:
 	void CopyTile(SimpleImage& image, Page request);
-
 private:
 	VirtualTextureInfo* m_info = nullptr;
 	PageIndexer* m_indexer = nullptr;

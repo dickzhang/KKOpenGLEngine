@@ -1,6 +1,5 @@
 #include "VirtualTexture.h"
 
-
 // VirtualTexture
 VirtualTexture::VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo* _info, int _atlassize, int _uploadsperframe, int _mipBias)
 {
@@ -154,7 +153,6 @@ void VirtualTexture::clear()
 void VirtualTexture::update(const std::vector<int>& requests, unsigned short  blitViewId)
 {
 	m_pagesToLoad.clear();
-
 	// Find out what is already in memory
 	// If it is, update it's position in the LRU collection
 	// Otherwise add it to the list of pages to load

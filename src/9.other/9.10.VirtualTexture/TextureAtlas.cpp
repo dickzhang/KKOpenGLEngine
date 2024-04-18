@@ -1,4 +1,6 @@
 #include "TextureAtlas.h"
+#include "OpenGLTexture.h"
+
 TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadsperframe)
 	: m_info(_info)
 	, m_stagingPool(_info->GetPageSize(), _info->GetPageSize(), _uploadsperframe, false)
@@ -7,14 +9,13 @@ TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadspe
 	int pagesize = m_info->GetPageSize();
 	int size = _count * pagesize;
 
-	m_texture = bgfx::createTexture2D(
-		(uint16_t)size
-		, (uint16_t)size
-		, false
-		, 1
-		, bgfx::TextureFormat::BGRA8
-		, BGFX_SAMPLER_UVW_CLAMP | BGFX_TEXTURE_BLIT_DST
-	);
+	TextureInfo info;
+	info.width = size;
+	info.height = size;
+	info.hasmip = false;
+	info.layernum = 1;
+	info.format = EPixelFormat::PF_A8R8G8B8;
+	m_texture=OpenGLTexture::generateTexture2D(info);
 }
 
 TextureAtlas::~TextureAtlas()
@@ -27,28 +28,21 @@ void TextureAtlas::setUploadsPerFrame(int count)
 	m_stagingPool.grow(count);
 }
 
-void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short  blitViewId)
+void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short blitViewId)
 {
 	// Get next staging texture to write to
 	auto writer = m_stagingPool.getTexture();
 	m_stagingPool.next();
 
 	// Update texture with new atlas data
-	auto   pagesize = uint16_t(m_info->GetPageSize());
-	bgfx::updateTexture2D(
-		writer
-		, 0
-		, 0
-		, 0
-		, 0
-		, pagesize
-		, pagesize
-		, bgfx::copy(data, pagesize * pagesize * s_channelCount)
-	);
+	auto pagesize = uint16_t(m_info->GetPageSize());
+
+	OpenGLTexture::updateTexture2D(writer,0,0,0,pagesize,pagesize, data);
 
 	// Copy the texture part to the actual atlas texture
 	auto xpos = uint16_t(pt.m_x * pagesize);
 	auto ypos = uint16_t(pt.m_y * pagesize);
+
 	bgfx::blit(blitViewId, m_texture, 0, xpos, ypos, 0, writer, 0, 0, 0, 0, pagesize, pagesize);
 }
 

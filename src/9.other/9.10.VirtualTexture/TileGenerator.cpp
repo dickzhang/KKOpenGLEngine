@@ -1,11 +1,17 @@
 #include "TileGenerator.h"
 #include "VirtualTexture.h"
 #include <stdio.h>
+#include <stb_image.h>
+#include <learnopengl/filesystem.h>
 #include <string.h>
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+
 // TileGenerator
 TileGenerator::TileGenerator(VirtualTextureInfo* _info)
 {
-	m_info=_info;
+	m_info = _info;
 	m_tilesize = m_info->m_tileSize;
 	m_pagesize = m_info->GetPageSize();
 }
@@ -54,58 +60,46 @@ bool TileGenerator::generate(const std::string& _filePath)
 	char tmp[256];
 	std::snprintf(tmp, sizeof(tmp), "%.*s.vt", baseName.length(), baseName.c_str());
 
-	std::string cacheFilePath="temp";
-	cacheFilePath.join(tmp);
+	std::string cacheFilePath = "temp/";
+	cacheFilePath = cacheFilePath + tmp;
 
-	// Check if tile file already exist
+	if (std::filesystem::exists(cacheFilePath))
 	{
-		bx::Error err;
-		bx::FileReader fileReader;
-
-		if (bx::open(&fileReader, cacheFilePath, &err))
-		{
-			bx::close(&fileReader);
-			std::cout << "Tile data file '%s' already exists. Skipping generation.\n" << cacheFilePath.c_str() << std::endl;
-			return true;
-		}
+		std::cout << "Tile data file '%s' already exists. Skipping generation.\n" << cacheFilePath.c_str() << std::endl;
+		return true;
 	}
 
 	// Read image
 	{
 		std::cout << "Reading image '%s'.\n" << _filePath.c_str() << std::endl;
-		bx::Error err;
-		bx::FileReader fileReader;
-
-		if (!bx::open(&fileReader, _filePath, &err))
+		std::ifstream file(_filePath, std::ios::binary);
+		if (!file.is_open())
 		{
-			std::cout << "Image open failed'%s'.\n" << _filePath.c_str() << std::endl;
+			std::cerr << "Unable to open file" << std::endl;
 			return false;
 		}
-
-		int64_t size = bx::getSize(&fileReader);
-
+		size_t size = file.tellg();
+		file.seekg(0, std::ios::beg);
 		if (0 == size)
 		{
 			std::cout << "Image '%s' size is 0.\n" << _filePath.c_str() << std::endl;
 			return false;
 		}
+		file.close();
 
-		uint8_t* rawImage = (uint8_t*)bx::alloc(VirtualTexture::getAllocator(), size_t(size));
-
-		bx::read(&fileReader, rawImage, int32_t(size), &err);
-		bx::close(&fileReader);
-
-		if (!err.isOk())
+		int width, height, nrChannels;
+		unsigned char* data = stbi_load(FileSystem::getPath(_filePath).c_str(), &width, &height, &nrChannels, 0);
+		if (data)
 		{
-			std::cout <<"Image read failed'%s'.\n" << _filePath.c_str() << std::endl;
-			bx::free(VirtualTexture::getAllocator(), rawImage);
-			return false;
+			m_sourceImage.m_data = data;
+			m_sourceImage.m_width = width;
+			m_sourceImage.m_height = height;
+			m_sourceImage.m_format = EPixelFormat::PF_BGRA;
+			m_sourceImage.m_size = uint32_t(size);
+			m_sourceImage.m_offset = 0;
+			m_sourceImage.m_hasAlpha = nrChannels == 4 ? true : false;
 		}
-
-		m_sourceImage = bimg::imageParse(VirtualTexture::getAllocator(), rawImage, uint32_t(size), bimg::TextureFormat::BGRA8, &err);
-		bx::free(VirtualTexture::getAllocator(), rawImage);
-
-		if (!err.isOk())
+		else
 		{
 			std::cout << "Image parse failed'%s'.\n" << _filePath.c_str() << std::endl;
 			return false;
@@ -125,12 +119,12 @@ bool TileGenerator::generate(const std::string& _filePath)
 	m_4xtileImage = new SimpleImage(m_tilesize * 4, m_tilesize * 4, s_channelCount, 0xff);
 
 	// Generate tiles
-	std::cout <<"Generating tiles\n" << std::endl;
+	std::cout << "Generating tiles\n" << std::endl;
 	auto mipcount = m_indexer->getMipCount();
 	for (int i = 0; i < mipcount; ++i)
 	{
 		int count = (m_info->m_virtualTextureSize / m_tilesize) >> i;
-		std::cout << "Generating Mip:%d Count:%dx%d\n" << i<< count<< count << std::endl;
+		std::cout << "Generating Mip:%d Count:%dx%d\n" << i << count << count << std::endl;
 		for (int y = 0; y < count; ++y)
 		{
 			for (int x = 0; x < count; ++x)
@@ -143,7 +137,7 @@ bool TileGenerator::generate(const std::string& _filePath)
 		}
 	}
 
-	std::cout <<"Finising\n" << std::endl;
+	std::cout << "Finising\n" << std::endl;
 	// Write header
 	m_tileDataFile->writeInfo();
 	// Close tile file

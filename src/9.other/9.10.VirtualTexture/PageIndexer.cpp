@@ -17,7 +17,7 @@ PageIndexer::PageIndexer(VirtualTextureInfo* _info)
 		m_offsets[i] = m_count;
 		m_count += m_sizes[i] * m_sizes[i];
 	}
-	// Calculate reverse mapping
+	// º∆À„∑¥œÚ”≥…‰
 	m_reverse.resize(m_count);
 
 	for (int i = 0; i < m_mipcount; ++i)

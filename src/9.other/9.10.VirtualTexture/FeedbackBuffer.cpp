@@ -8,16 +8,15 @@ FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _heigh
 	m_width = _width;
 	m_height = _height;
 
-	// Setup classes
 	m_indexer = new PageIndexer(m_info);
 	m_requests.resize(m_indexer->getCount());
 
-	// Initialize and clear buffers
+	// 初始化和清除缓冲区
 	m_downloadBuffer.resize(m_width * m_height * s_channelCount);
 	std::memset(&m_downloadBuffer[0], 0, m_width * m_height * s_channelCount);
 	clear();
 
-	// Initialize feedback frame buffer
+	//初始化反馈帧缓冲区
 	unsigned short feedbackFrameBufferTextures[] =
 	{
 		bgfx::createTexture2D(uint16_t(m_width), uint16_t(m_height), false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_RT),
@@ -35,7 +34,7 @@ FeedbackBuffer::~FeedbackBuffer()
 		delete m_indexer;
 		m_indexer = nullptr;
 	}
-	glDeleteFramebuffers(1, &m_feedbackFrameBuffer);
+	glDeleteTransformFeedbacks(1, &m_feedbackFrameBuffer);
 }
 
 void FeedbackBuffer::clear()
@@ -44,25 +43,24 @@ void FeedbackBuffer::clear()
 	std::memset(&m_requests[0], 0, sizeof(int) * m_indexer->getCount());
 }
 
-void FeedbackBuffer::copy(unsigned short  viewId)
+void FeedbackBuffer::copy(unsigned short viewId)
 {
 	m_lastStagingTexture = m_stagingPool.getTexture();
-	// Copy feedback buffer render target to staging texture
+	//复制反馈缓冲区渲染目标到暂存纹理
 	bgfx::blit(viewId, m_lastStagingTexture, 0, 0, bgfx::getTexture(m_feedbackFrameBuffer));
 	m_stagingPool.next();
 }
 
 void FeedbackBuffer::download()
 {
-	// Check if there's an already rendered feedback buffer available
+	//检查是否有一个已经渲染的反馈缓冲区可用
 	if (m_lastStagingTexture == 0)
 	{
 		return;
 	}
-
-	// Read the texture
+	//读取纹理数据
 	bgfx::readTexture(m_lastStagingTexture, &m_downloadBuffer[0]);
-	// Loop through pixels and check if anything was written
+	//循环遍历像素并检查是否写入了任何内容
 	auto data = &m_downloadBuffer[0];
 	auto colors = (Color*)data;
 	auto dataSize = m_width * m_height;
@@ -72,17 +70,15 @@ void FeedbackBuffer::download()
 		auto& color = colors[i];
 		if (color.m_a >= 0xff)
 		{
-			// Page found! Add it to the request queue
+			//页面找到!将其添加到请求队列中
 			Page request = { color.m_b, color.m_g, color.m_r };
 			addRequestAndParents(request);
-			// Clear the pixel, so that we don't have to do it in another pass
+			//清除像素，这样我们就不需要在另一个通道中做了
 			color = { 0,0,0,0 };
 		}
 	}
 }
 
-// This function validates the pages and adds the page's parents
-// We do this so that we can fall back to them if we run out of memory
 void FeedbackBuffer::addRequestAndParents(Page request)
 {
 	auto PageTableSizeLog2 = m_indexer->getMipCount();
@@ -95,7 +91,7 @@ void FeedbackBuffer::addRequestAndParents(Page request)
 
 		Page page = { xpos, ypos, request.m_mip + i };
 
-		// If it's not a valid page (position or mip out of range) just skip it
+		//如果它不是一个有效的页面(位置或mip超出范围)，就跳过它
 		if (!m_indexer->isValid(page))
 		{
 			return;
