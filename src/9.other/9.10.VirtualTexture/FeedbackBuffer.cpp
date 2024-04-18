@@ -100,7 +100,6 @@ void FeedbackBuffer::addRequestAndParents(Page request)
 		{
 			return;
 		}
-
 		++m_requests[m_indexer->getIndexFromPage(page)];
 	}
 }

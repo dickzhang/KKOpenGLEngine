@@ -183,9 +183,7 @@ void TileGenerator::CopyTile(SimpleImage& image, Page request)
 		int xpos = request.m_x << 1;
 		int ypos = request.m_y << 1;
 		int mip = request.m_mip - 1;
-
 		int size = m_info->GetPageTableSize() >> mip;
-
 		m_4xtileImage->clear((uint8_t)request.m_mip);
 
 		for (int y = 0; y < 4; ++y)
@@ -197,18 +195,14 @@ void TileGenerator::CopyTile(SimpleImage& image, Page request)
 				// Wrap so we get the border sections of other pages
 				page.m_x = (int)glm::mod((float)page.m_x, (float)size);
 				page.m_y = (int)glm::mod((float)page.m_y, (float)size);
-
 				m_tileDataFile->readPage(m_indexer->getIndexFromPage(page), &m_page2Image->m_data[0]);
-
 				Rect src_rect = { m_info->m_borderSize, m_info->m_borderSize, m_tilesize, m_tilesize };
 				TPoint dst_offset = { x * m_tilesize, y * m_tilesize };
-
 				m_4xtileImage->copy(dst_offset, *m_page2Image, src_rect);
 			}
 		}
 
 		SimpleImage::mipmap(&m_4xtileImage->m_data[0], m_4xtileImage->m_width, s_channelCount, &m_2xtileImage->m_data[0]);
-
 		Rect srect = { m_tilesize / 2 - m_info->m_borderSize, m_tilesize / 2 - m_info->m_borderSize, m_pagesize, m_pagesize };
 		image.copy({ 0,0 }, *m_2xtileImage, srect);
 	}

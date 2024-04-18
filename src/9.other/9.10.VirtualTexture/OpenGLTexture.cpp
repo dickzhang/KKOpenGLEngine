@@ -85,7 +85,7 @@ unsigned int OpenGLTexture::generateTexture2D(int w, int h)
 	return tex_output;
 }
 
-unsigned int OpenGLTexture::generateTexture2D(TextureInfo info, const Memory* _mem = NULL)
+unsigned int OpenGLTexture::generateTexture2D(TextureInfo info, const Memory* _mem)
 {
 	unsigned int tex_output;
 	glGenTextures(1, &tex_output);

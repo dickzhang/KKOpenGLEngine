@@ -21,10 +21,10 @@ public:
 	unsigned short getTexture();
 private:
 	VirtualTextureInfo* m_info = nullptr;
-	unsigned short m_texture = 0;
+	GLuint m_texture = 0;
 	PageIndexer* m_indexer = nullptr;
 	Quadtree* m_quadtree = nullptr;
 	bool m_quadtreeDirty = true;
 	std::vector<SimpleImage*> m_images;
-	std::vector<unsigned short>	m_stagingTextures;
+	std::vector<GLuint>	m_stagingTextures;
 };
