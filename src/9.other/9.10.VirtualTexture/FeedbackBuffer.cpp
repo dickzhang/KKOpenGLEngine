@@ -1,4 +1,5 @@
 #include "FeedbackBuffer.h"
+#include "OpenGLTexture.h"
 
 // FeedbackBuffer
 FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _height)
@@ -16,13 +17,25 @@ FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _heigh
 	std::memset(&m_downloadBuffer[0], 0, m_width * m_height * s_channelCount);
 	clear();
 
+	TextureInfo info;
+	info.width = m_width;
+	info.height = m_height;
+	info.hasmip = false;
+	info.layernum = 1; 
+	info.format = EPixelFormat::PF_A8R8G8B8;
+	
+	TextureInfo info1;
+	info1.width = m_width;
+	info1.height = m_height;
+	info1.hasmip = false;
+	info1.layernum = 1;
+	info1.format = EPixelFormat::PF_R32G32B32A32;
 	//初始化反馈帧缓冲区
 	unsigned short feedbackFrameBufferTextures[] =
 	{
-		bgfx::createTexture2D(uint16_t(m_width), uint16_t(m_height), false, 1, bgfx::TextureFormat::BGRA8, BGFX_TEXTURE_RT),
-		bgfx::createTexture2D(uint16_t(m_width), uint16_t(m_height), false, 1, bgfx::TextureFormat::D32F,  BGFX_TEXTURE_RT),
+		OpenGLTexture::generateTexture2D(info),
+		OpenGLTexture::generateTexture2D(info1)
 	};
-
 	m_feedbackFrameBuffer = bgfx::createFrameBuffer(BX_COUNTOF(feedbackFrameBufferTextures), feedbackFrameBufferTextures, true);
 	m_lastStagingTexture = 0;
 }

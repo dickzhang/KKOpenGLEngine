@@ -1,4 +1,5 @@
 #include "PageTable.h"
+#include "OpenGLTexture.h"
 
 // PageTable
 PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* _indexer)
@@ -8,7 +9,16 @@ PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* 
 
 	auto size = m_info->GetPageTableSize();
 	m_quadtree = new Quadtree({ 0, 0, size, size }, (int)glm::log2((float)size));
-	m_texture = bgfx::createTexture2D((uint16_t)size, (uint16_t)size, true, 1, bgfx::TextureFormat::BGRA8, BGFX_SAMPLER_UVW_CLAMP | BGFX_SAMPLER_POINT | BGFX_TEXTURE_BLIT_DST);
+
+	TextureInfo info;
+	info.width = size;
+	info.height = size;
+	info.hasmip = true;
+	info.layernum = 1;
+	info.format = EPixelFormat::PF_A8R8G8B8;
+	info.addressingMode = ETextureAddressingMode::TAM_Clamp;
+	info.filterType = ETextureFilterType::Point;
+	m_texture = OpenGLTexture::generateTexture2D(info);
 
 	_cache->added = [=](Page page, TPoint pt)
 	{
@@ -25,7 +35,16 @@ PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* 
 	{
 		int  mipSize = m_info->GetPageTableSize() >> i;
 		auto simpleImage =new SimpleImage(mipSize, mipSize, s_channelCount);
-		auto stagingTexture = bgfx::createTexture2D((uint16_t)mipSize, (uint16_t)mipSize, false, 1, bgfx::TextureFormat::BGRA8, BGFX_SAMPLER_UVW_CLAMP | BGFX_SAMPLER_POINT);
+
+		TextureInfo info;
+		info.width = mipSize;
+		info.height = mipSize;
+		info.hasmip = false;
+		info.layernum = 1;
+		info.format = EPixelFormat::PF_A8R8G8B8;
+		info.addressingMode = ETextureAddressingMode::TAM_Clamp;
+		info.filterType = ETextureFilterType::Point;
+		auto stagingTexture = OpenGLTexture::generateTexture2D(info);
 		m_images.push_back(simpleImage);
 		m_stagingTextures.push_back(stagingTexture);
 	}

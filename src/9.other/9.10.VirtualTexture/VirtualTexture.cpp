@@ -102,7 +102,6 @@ int VirtualTexture::getUploadsPerFrame() const
 	return m_uploadsPerFrame;
 }
 
-
 void VirtualTexture::enableShowBoarders(bool enable)
 {
 	if (m_loader->m_showBorders == enable)

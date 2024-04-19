@@ -15,6 +15,7 @@ TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadspe
 	info.hasmip = false;
 	info.layernum = 1;
 	info.format = EPixelFormat::PF_A8R8G8B8;
+	info.addressingMode = ETextureAddressingMode::TAM_Clamp;
 	m_texture=OpenGLTexture::generateTexture2D(info);
 }
 
@@ -37,6 +38,7 @@ void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short blitViewI
 	// Update texture with new atlas data
 	auto pagesize = uint16_t(m_info->GetPageSize());
 
+	//TODO 这个update方法的实现需要对比后在看
 	OpenGLTexture::updateTexture2D(writer,0,0,0,pagesize,pagesize, data);
 
 	// Copy the texture part to the actual atlas texture

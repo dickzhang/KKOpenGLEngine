@@ -85,39 +85,6 @@ unsigned int OpenGLTexture::generateTexture2D(int w, int h)
 	return tex_output;
 }
 
-unsigned int OpenGLTexture::generateTexture2D(TextureInfo info, const Memory* _mem)
-{
-	unsigned int tex_output;
-	glGenTextures(1, &tex_output);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex_output);
-
-	auto addressmode = OpenGLMappings::Get(info.addressingMode);
-	auto filterType = OpenGLMappings::Get(info.filterType);
-	auto format = OpenGLMappings::Get(info.format);
-	auto pixelFormat = OpenGLMappings::GetPixelFormat(info.format);
-	auto pixelType = OpenGLMappings::GetPixelType(info.format);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, addressmode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, addressmode);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterType);
-	if (info.hasmip)
-	{
-		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	}
-	else
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterType);
-	}
-	glTexImage2D(GL_TEXTURE_2D, 0, format, info.width, info.height, 0, pixelFormat, pixelType, _mem ? _mem->data : NULL);
-	if (info.hasmip)
-	{
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	glBindImageTexture(0, tex_output, 0, pixelType, 0, GL_READ_WRITE, format);
-	return tex_output;
-}
-
 void OpenGLTexture::updateTexture2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, const void* pixels)
 {
 	glBindTexture(GL_TEXTURE_2D, target);
@@ -146,4 +113,37 @@ unsigned int OpenGLTexture::generateTexture3D(int w, int h, int d)
 void OpenGLTexture::bindTexture2D(unsigned int tex, int unit)
 {
 	glBindImageTexture(unit, tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+}
+
+unsigned int OpenGLTexture::generateTexture2D(TextureInfo info, const Memory* _mem)
+{
+	unsigned int tex_output;
+	glGenTextures(1, &tex_output);
+	glBindTexture(GL_TEXTURE_2D, tex_output);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	auto addressmode = OpenGLMappings::Get(info.addressingMode);
+	auto filterType = OpenGLMappings::Get(info.filterType);
+	auto format = OpenGLMappings::Get(info.format);
+	auto pixelFormat = OpenGLMappings::GetPixelFormat(info.format);
+	auto pixelType = OpenGLMappings::GetPixelType(info.format);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, addressmode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, addressmode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterType);
+	if (info.hasmip)
+	{
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterType);
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, format, info.width, info.height, 0, pixelFormat, pixelType, _mem ? _mem->data : NULL);
+	if (info.hasmip)
+	{
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return tex_output;
 }

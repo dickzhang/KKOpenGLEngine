@@ -12,12 +12,6 @@ StagingPool::StagingPool(int _width, int _height, int _count, bool _readBack)
 	m_TextureInfo.colorSpace = EColorSpace::ECS_sRGB;
 	m_TextureInfo.format = EPixelFormat::PF_BGRA;
 	m_TextureInfo.readback = _readBack;
-
-	m_flags = BGFX_TEXTURE_BLIT_DST | BGFX_SAMPLER_UVW_CLAMP;
-	if (_readBack)
-	{
-		m_flags |= BGFX_TEXTURE_READ_BACK;
-	}
 	grow(_count);
 }
 
@@ -33,9 +27,7 @@ void StagingPool::grow(int count)
 {
 	while ((int)m_stagingTextures.size() < count)
 	{
-		//auto stagingTexture = OpenGLTexture::generateTexture2D(m_TextureInfo);
-
-		auto stagingTexture = bgfx::createTexture2D((uint16_t)m_width, (uint16_t)m_height, false, 1, bgfx::TextureFormat::BGRA8, m_flags);
+		auto stagingTexture = OpenGLTexture::generateTexture2D(m_TextureInfo);
 		m_stagingTextures.push_back(stagingTexture);
 	}
 }
