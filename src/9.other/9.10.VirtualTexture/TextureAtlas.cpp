@@ -1,13 +1,14 @@
 #include "TextureAtlas.h"
 #include "OpenGLTexture.h"
+#include "OpenGLMappings.h"
 
-TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadsperframe)
+TextureAtlas::TextureAtlas(VirtualTextureInfo* _info,int _count,int _uploadsperframe)
 	: m_info(_info)
-	, m_stagingPool(_info->GetPageSize(), _info->GetPageSize(), _uploadsperframe, false)
+	,m_stagingPool(_info->GetPageSize(),_info->GetPageSize(),_uploadsperframe,false)
 {
 	// Create atlas texture
 	int pagesize = m_info->GetPageSize();
-	int size = _count * pagesize;
+	int size = _count*pagesize;
 
 	TextureInfo info;
 	info.width = size;
@@ -16,12 +17,12 @@ TextureAtlas::TextureAtlas(VirtualTextureInfo* _info, int _count, int _uploadspe
 	info.layernum = 1;
 	info.format = EPixelFormat::PF_A8R8G8B8;
 	info.addressingMode = ETextureAddressingMode::TAM_Clamp;
-	m_texture=OpenGLTexture::generateTexture2D(info);
+	m_texture = OpenGLTexture::generateTexture2D(info);
 }
 
 TextureAtlas::~TextureAtlas()
 {
-	glDeleteTextures(1, &m_texture);
+	glDeleteTextures(1,&m_texture);
 }
 
 void TextureAtlas::setUploadsPerFrame(int count)
@@ -29,7 +30,7 @@ void TextureAtlas::setUploadsPerFrame(int count)
 	m_stagingPool.grow(count);
 }
 
-void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short blitViewId)
+void TextureAtlas::uploadPage(TPoint pt,uint8_t* data,unsigned short blitViewId)
 {
 	// Get next staging texture to write to
 	auto writer = m_stagingPool.getTexture();
@@ -38,14 +39,13 @@ void TextureAtlas::uploadPage(TPoint pt, uint8_t* data, unsigned short blitViewI
 	// Update texture with new atlas data
 	auto pagesize = uint16_t(m_info->GetPageSize());
 
-	//TODO 这个update方法的实现需要对比后在看
-	OpenGLTexture::updateTexture2D(writer,0,0,0,pagesize,pagesize, data);
+	OpenGLTexture::updateTexture2D(writer,0,0,0,pagesize,pagesize,data);
 
 	// Copy the texture part to the actual atlas texture
-	auto xpos = uint16_t(pt.m_x * pagesize);
-	auto ypos = uint16_t(pt.m_y * pagesize);
+	auto xpos = uint16_t(pt.m_x*pagesize);
+	auto ypos = uint16_t(pt.m_y*pagesize);
+	OpenGLTexture::blit(m_texture,0,xpos,ypos,writer,0,pagesize,pagesize);
 
-	bgfx::blit(blitViewId, m_texture, 0, xpos, ypos, 0, writer, 0, 0, 0, 0, pagesize, pagesize);
 }
 
 unsigned short TextureAtlas::getTexture()

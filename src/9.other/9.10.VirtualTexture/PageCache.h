@@ -21,30 +21,32 @@ public:
 		Page	m_page;
 		TPoint	m_point;
 
-		bool operator==(const Page& other) const
+		bool operator==(const LruPage& other) const
 		{
-			return m_page == other;
+			return m_page==other.m_page;
 		}
 	};
 
 public:
-	PageCache(TextureAtlas* _atlas, PageLoader* _loader, int _count);
+	PageCache(TextureAtlas* _atlas,PageLoader* _loader,int _count);
 	bool touch(Page page);
-	bool request(Page request, unsigned short blitViewId);
+	bool request(Page request,unsigned short blitViewId);
 	void clear();
-	void loadComplete(Page page, uint8_t* data);
+	void loadComplete(Page page,uint8_t* data);
 
 	// These callbacks are used to notify the other systems
-	std::function<void(Page, TPoint)> removed;
-	std::function<void(Page, TPoint)> added;
+	std::function<void(Page,TPoint)> removed;
+	std::function<void(Page,TPoint)> added;
 
 private:
 	TextureAtlas* m_atlas;
 	PageLoader* m_loader;
 	int m_count;
 	int m_current; // This is used for generating the texture atlas indices before the lru is full
-	std::unordered_set<Page>    m_lru_used;
+	//std::unordered_set<Page>    m_lru_used;
+	std::vector<Page>    m_lru_used;
 	std::vector<LruPage>		m_lru;
-	std::unordered_set<Page>	m_loading;
+	//std::unordered_set<Page>	m_loading;
+	std::vector<Page>	m_loading;
 	unsigned short  m_blitViewId;
 };

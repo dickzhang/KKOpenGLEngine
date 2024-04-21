@@ -11,6 +11,8 @@
 #include "PageIndexer.h"
 #include "TileDataFile.h"
 #include <iostream>
+#include "OpenGLTexture.h"
+
 class TileGenerator
 {
 

@@ -58,7 +58,7 @@ bool TileGenerator::generate(const std::string& _filePath)
 
 	// Generate cache filename
 	char tmp[256];
-	std::snprintf(tmp, sizeof(tmp), "%.*s.vt", baseName.length(), baseName.c_str());
+	std::snprintf(tmp, sizeof(tmp), "%.*s.vt", (unsigned int)baseName.length(), baseName.c_str());
 
 	std::string cacheFilePath = "temp/";
 	cacheFilePath = cacheFilePath + tmp;

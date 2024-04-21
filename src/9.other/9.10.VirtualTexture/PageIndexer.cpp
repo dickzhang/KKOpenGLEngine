@@ -33,6 +33,10 @@ PageIndexer::PageIndexer(VirtualTextureInfo* _info)
 		}
 	}
 }
+PageIndexer::~PageIndexer()
+{
+
+}
 
 int PageIndexer::getIndexFromPage(Page page)
 {

@@ -86,7 +86,6 @@ void DemoRender::GenerateMesh()
 	CreateVAO();
 }
 
-
 void DemoRender::CreateVAO()
 {
 	//glGenVertexArrays(1,&VAO);

@@ -99,7 +99,7 @@ struct VirtualTextureInfo
 
 struct Memory
 {
-	Memory() = delete;
+	//Memory() = delete;
 	uint8_t* data; //!< Pointer to data.
 	uint32_t size; //!< Data size.
 };

@@ -2,13 +2,13 @@
 #include "OpenGLTexture.h"
 
 // PageTable
-PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* _indexer)
+PageTable::PageTable(PageCache* _cache,VirtualTextureInfo* _info,PageIndexer* _indexer)
 {
 	m_info = _info;
 	m_indexer = _indexer;
 
 	auto size = m_info->GetPageTableSize();
-	m_quadtree = new Quadtree({ 0, 0, size, size }, (int)glm::log2((float)size));
+	m_quadtree = new Quadtree({ 0,0,size,size },(int)glm::log2((float)size));
 
 	TextureInfo info;
 	info.width = size;
@@ -20,21 +20,21 @@ PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* 
 	info.filterType = ETextureFilterType::Point;
 	m_texture = OpenGLTexture::generateTexture2D(info);
 
-	_cache->added = [=](Page page, TPoint pt)
+	_cache->added = [=](Page page,TPoint pt)
 	{
-		m_quadtreeDirty = true; m_quadtree->add(page, pt);
+		m_quadtreeDirty = true; m_quadtree->add(page,pt);
 	};
-	_cache->removed = [=](Page page, TPoint pt)
+	_cache->removed = [=](Page page,TPoint pt)
 	{
 		m_quadtreeDirty = true; m_quadtree->remove(page);
 	};
 
 	auto PageTableSizeLog2 = m_indexer->getMipCount();
 
-	for (int i = 0; i < PageTableSizeLog2; ++i)
+	for(int i = 0; i<PageTableSizeLog2; ++i)
 	{
-		int  mipSize = m_info->GetPageTableSize() >> i;
-		auto simpleImage =new SimpleImage(mipSize, mipSize, s_channelCount);
+		int  mipSize = m_info->GetPageTableSize()>>i;
+		auto simpleImage = new SimpleImage(mipSize,mipSize,s_channelCount);
 
 		TextureInfo info;
 		info.width = mipSize;
@@ -52,43 +52,44 @@ PageTable::PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* 
 
 PageTable::~PageTable()
 {
-	if (m_quadtree)
+	if(m_quadtree)
 	{
 		delete m_quadtree;
 		m_quadtree = nullptr;
 	}
-	glDeleteTextures(1, &m_texture);
+	glDeleteTextures(1,&m_texture);
 
-	for (int i = 0; i < (int)m_images.size(); ++i)
+	for(int i = 0; i<(int)m_images.size(); ++i)
 	{
-		if (m_images[i])
+		if(m_images[i])
 		{
 			delete m_images[i];
 			m_images[i] = nullptr;
 		}
 	}
 
-	for (int i = 0; i < (int)m_stagingTextures.size(); ++i)
+	for(int i = 0; i<(int)m_stagingTextures.size(); ++i)
 	{
-		glDeleteTextures(1, &m_stagingTextures[i]);
+		glDeleteTextures(1,&m_stagingTextures[i]);
 	}
 }
 
 void PageTable::update(unsigned short blitViewId)
 {
-	if (!m_quadtreeDirty)
+	if(!m_quadtreeDirty)
 	{
 		return;
 	}
 	m_quadtreeDirty = false;
 	auto PageTableSizeLog2 = m_indexer->getMipCount();
-	for (int i = 0; i < PageTableSizeLog2; ++i)
+	for(int i = 0; i<PageTableSizeLog2; ++i)
 	{
-		m_quadtree->write(*m_images[i], i);
+		m_quadtree->write(*m_images[i],i);
 		auto stagingTexture = m_stagingTextures[i];
-		auto size = uint16_t(m_info->GetPageTableSize() >> i);
-		bgfx::updateTexture2D(stagingTexture, 0, 0, 0, 0, size, size, bgfx::copy(&m_images[i]->m_data[0], size * size * s_channelCount));
-		bgfx::blit(blitViewId, m_texture, uint8_t(i), 0, 0, 0, stagingTexture, 0, 0, 0, 0, size, size);
+		auto size = uint16_t(m_info->GetPageTableSize()>>i);
+
+		OpenGLTexture::updateTexture2D(stagingTexture,0,0,0,size,size,&m_images[i]->m_data[0]);
+		OpenGLTexture::blit(m_texture,uint8_t(i),0,0,stagingTexture,0,size,size);
 	}
 }
 

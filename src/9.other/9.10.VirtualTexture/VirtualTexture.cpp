@@ -176,11 +176,9 @@ void VirtualTexture::update(const std::vector<int>& requests, unsigned short  bl
 	if (touched < m_atlasCount * m_atlasCount)
 	{
 		// sort by low res to high res and number of requests
-		std::sort(m_pagesToLoad.begin(), m_pagesToLoad.end(),[](const void* _a, const void* _b) -> int32_t
+		std::sort(m_pagesToLoad.begin(), m_pagesToLoad.end(),[](const PageCount& _a, const PageCount& _b) -> int32_t
 		{
-			const PageCount& lhs = *(const PageCount*)(_a);
-			const PageCount& rhs = *(const PageCount*)(_b);
-			return lhs.compareTo(rhs);
+			return _a.compareTo(_b);
 		});
 
 		// if more pages than will fit in memory or more than update per frame drop high res pages with lowest use count

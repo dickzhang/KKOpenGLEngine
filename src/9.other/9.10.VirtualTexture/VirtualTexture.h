@@ -16,6 +16,7 @@
 #include "PageTable.h"
 #include "TextureAtlas.h"
 #include "PageLoader.h"
+#include "OpenGLTexture.h"
 
 class VirtualTexture
 {
