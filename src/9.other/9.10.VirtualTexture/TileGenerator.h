@@ -5,13 +5,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
+#include <iostream>
 #include "Common.h"
 #include "VTCommon.h"
 #include "SimpleImage.h"
 #include "PageIndexer.h"
 #include "TileDataFile.h"
-#include <iostream>
-#include "OpenGLTexture.h"
 
 class TileGenerator
 {

@@ -1,5 +1,5 @@
 #include "VirtualTexture.h"
-
+#include <algorithm>
 // VirtualTexture
 VirtualTexture::VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo* _info, int _atlassize, int _uploadsperframe, int _mipBias)
 {

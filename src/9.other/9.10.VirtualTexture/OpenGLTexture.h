@@ -11,7 +11,7 @@ using namespace std;
 class OpenGLTexture
 {
 public:
-	//static unsigned int TextureFromFile(const char* path,const string& directory,bool gamma = false);
+	static unsigned int TextureFile(const char* path,const string& directory,bool gamma = false);
 	static unsigned int loadCubemap(vector<std::string> faces);
 	static unsigned int generateTexture2D(int w,int h);
 	static unsigned int generateTexture3D(int w,int h,int d);

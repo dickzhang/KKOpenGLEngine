@@ -42,7 +42,7 @@ RenderTexture::RenderTexture(int W_, int H_, const int nColorAttachments)
 		colorAttachmentsFlag[i] = GL_COLOR_ATTACHMENT0 + i;
 	}
 	glDrawBuffers(nColorAttachments, colorAttachmentsFlag);
-	delete colorAttachmentsFlag;
+	delete[] colorAttachmentsFlag;
 }
 
 RenderTexture::~RenderTexture()
