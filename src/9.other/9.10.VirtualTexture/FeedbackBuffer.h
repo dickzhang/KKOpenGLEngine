@@ -27,6 +27,7 @@ public:
 
 	int getWidth() const;
 	int getHeight() const;
+	RenderTexture* GetFrameBuffer();
 private:
 	VirtualTextureInfo* m_info = nullptr;
 	PageIndexer* m_indexer = nullptr;

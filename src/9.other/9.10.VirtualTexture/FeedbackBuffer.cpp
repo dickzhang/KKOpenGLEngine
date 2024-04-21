@@ -51,6 +51,11 @@ void FeedbackBuffer::copy(unsigned short viewId)
 	m_stagingPool.next();
 }
 
+RenderTexture* FeedbackBuffer::GetFrameBuffer()
+{
+	return m_RenderTexture;
+}
+
 void FeedbackBuffer::download()
 {
 	//检查是否有一个已经渲染的反馈缓冲区可用

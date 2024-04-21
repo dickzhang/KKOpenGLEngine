@@ -8,6 +8,10 @@
 #include <learnopengl/camera.h>
 #include <learnopengl/model.h>
 #include "ModuleBase.h"
+#include "VirtualTexture.h"
+#include "FeedbackBuffer.h"
+#include "TileGenerator.h"
+#include "TileDataFile.h"
 
 class DemoRender :public ModuleBase
 {
@@ -28,7 +32,12 @@ public:
 
 private:
 	void GenerateMesh();
-	void InitShader();
 	void CreateVAO();
+	void DrawObject();
 private:
+	VirtualTexture* m_VirtualTexture = nullptr;
+	FeedbackBuffer* m_FeedbackBuffer = nullptr;
+	VirtualTextureInfo* m_VirtualTextureInfo = nullptr;
+	TileGenerator* m_TileGenerator = nullptr;
+	TileDataFile* m_TileDataFile = nullptr;
 };
