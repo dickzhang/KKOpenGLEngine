@@ -3,7 +3,7 @@
 #include "OpenGLMappings.h"
 
 // FeedbackBuffer
-FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo* _info,int _width,int _height)
+FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo _info,int _width,int _height)
 	:m_stagingPool(_width,_height,1,true)
 {
 	m_info = _info;

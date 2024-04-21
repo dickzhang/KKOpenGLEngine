@@ -84,8 +84,8 @@ struct PageCount
 struct VirtualTextureInfo
 {
 	int m_virtualTextureSize = 0;
-	int m_tileSize = 0;
-	int m_borderSize = 0;
+	int m_tileSize = 64;
+	int m_borderSize = 1;
 
 	int GetPageSize() const
 	{

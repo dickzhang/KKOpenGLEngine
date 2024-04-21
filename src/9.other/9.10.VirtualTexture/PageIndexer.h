@@ -11,7 +11,7 @@
 class PageIndexer
 {
 public:
-	PageIndexer(VirtualTextureInfo* _info);
+	PageIndexer(VirtualTextureInfo _info);
 	~PageIndexer();
 	int  getIndexFromPage(Page page);
 	Page getPageFromIndex(int index);
@@ -20,7 +20,7 @@ public:
 	int  getMipCount() const;
 
 private:
-	VirtualTextureInfo* m_info;
+	VirtualTextureInfo m_info;
 	int                 m_mipcount;
 	int					m_count;
 	// This stores the offsets to the first page of the start of a mipmap level

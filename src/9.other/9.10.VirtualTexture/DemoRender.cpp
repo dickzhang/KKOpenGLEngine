@@ -1,5 +1,6 @@
 #include "DemoRender.h"
 #include "Common.h"
+#include "learnopengl/filesystem.h"
 
 ModuleBase* CreateAppModule()
 {
@@ -8,16 +9,14 @@ ModuleBase* CreateAppModule()
 
 DemoRender::DemoRender()
 {
-	m_VirtualTextureInfo = new VirtualTextureInfo();
-	// The actual size will be read from the tile data file
-	m_VirtualTextureInfo->m_virtualTextureSize = 8192;
-	m_VirtualTextureInfo->m_tileSize = 128;
-	m_VirtualTextureInfo->m_borderSize = 1;
+	m_VirtualTextureInfo.m_virtualTextureSize = 8192;
+	m_VirtualTextureInfo.m_tileSize = 128;
+	m_VirtualTextureInfo.m_borderSize = 1;
 
 	m_TileGenerator = new TileGenerator(m_VirtualTextureInfo);
-	m_TileGenerator->generate("textures/8k_mars.jpg");
+	m_TileGenerator->generate(FileSystem::getPath("resources/textures/8k_mars.jpg"));
 
-	m_TileDataFile = new TileDataFile("temp/8k_mars.vt",m_VirtualTextureInfo);
+	m_TileDataFile = new TileDataFile(FileSystem::getPath("resources/textures/8k_mars.jpg.vt"),m_VirtualTextureInfo);
 	m_TileDataFile->readInfo();
 
 	m_VirtualTexture = new VirtualTexture(m_TileDataFile,m_VirtualTextureInfo,2048,1);
@@ -26,11 +25,6 @@ DemoRender::DemoRender()
 
 DemoRender::~DemoRender()
 {
-	if(m_VirtualTextureInfo)
-	{
-		delete m_VirtualTextureInfo;
-		m_VirtualTextureInfo = nullptr;
-	}
 	if(m_TileGenerator)
 	{
 		delete m_TileGenerator;

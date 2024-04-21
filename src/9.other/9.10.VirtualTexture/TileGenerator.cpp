@@ -2,18 +2,17 @@
 #include "VirtualTexture.h"
 #include <stdio.h>
 #include <stb_image.h>
-#include <learnopengl/filesystem.h>
 #include <string.h>
 #include <filesystem>
 #include <iostream>
 #include <fstream>
 
 // TileGenerator
-TileGenerator::TileGenerator(VirtualTextureInfo* _info)
+TileGenerator::TileGenerator(VirtualTextureInfo _info)
 {
 	m_info = _info;
-	m_tilesize = m_info->m_tileSize;
-	m_pagesize = m_info->GetPageSize();
+	m_tilesize = m_info.m_tileSize;
+	m_pagesize = m_info.GetPageSize();
 }
 
 TileGenerator::~TileGenerator()
@@ -60,58 +59,50 @@ bool TileGenerator::generate(const std::string& _filePath)
 	char tmp[256];
 	std::snprintf(tmp,sizeof(tmp),"%.*s.vt",(unsigned int)baseName.length(),baseName.c_str());
 
-	std::string cacheFilePath = "temp/";
-	cacheFilePath = cacheFilePath+tmp;
-
-	if(std::filesystem::exists(cacheFilePath))
+	if(std::filesystem::exists(tmp))
 	{
-		std::cout<<"Tile data file '%s' already exists. Skipping generation.\n"<<cacheFilePath.c_str()<<std::endl;
+		std::cout<<"Tile data file already exists. Skipping generation"<<std::endl;
 		return true;
 	}
 
 	// Read image
 	{
-		std::cout<<"Reading image '%s'.\n"<<_filePath.c_str()<<std::endl;
+		std::cout<<"Reading image:"<<_filePath.c_str()<<std::endl;
 		std::ifstream file(_filePath,std::ios::binary);
 		if(!file.is_open())
 		{
 			std::cerr<<"Unable to open file"<<std::endl;
 			return false;
 		}
-		size_t size = file.tellg();
-		file.seekg(0,std::ios::beg);
-		if(0==size)
-		{
-			std::cout<<"Image '%s' size is 0.\n"<<_filePath.c_str()<<std::endl;
-			return false;
-		}
 		file.close();
 
 		int width,height,nrChannels;
-		unsigned char* data = stbi_load(FileSystem::getPath(_filePath).c_str(),&width,&height,&nrChannels,0);
+		unsigned char* data = stbi_load(_filePath.c_str(),&width,&height,&nrChannels,0);
 		if(data)
 		{
 			m_sourceImage.m_data = data;
 			m_sourceImage.m_width = width;
 			m_sourceImage.m_height = height;
 			m_sourceImage.m_format = EPixelFormat::PF_BGRA;
-			m_sourceImage.m_size = uint32_t(size);
+			//m_sourceImage.m_size = width*height*nrChannels;
+			m_sourceImage.m_size = width*height*4;
 			m_sourceImage.m_offset = 0;
 			m_sourceImage.m_hasAlpha = nrChannels==4 ? true : false;
+			m_sourceImage.m_hasAlpha = true;
 		}
 		else
 		{
-			std::cout<<"Image parse failed'%s'.\n"<<_filePath.c_str()<<std::endl;
+			std::cout<<"Image parse failed"<<_filePath.c_str()<<std::endl;
 			return false;
 		}
 	}
 
 	// Setup
-	m_info->m_virtualTextureSize = m_sourceImage.m_width;
+	m_info.m_virtualTextureSize = m_sourceImage.m_width;
 	m_indexer = new PageIndexer(m_info);
 
 	// Open tile data file
-	m_tileDataFile = new  TileDataFile(cacheFilePath,m_info,true);
+	m_tileDataFile = new  TileDataFile(tmp,m_info,true);
 	m_page1Image = new SimpleImage(m_pagesize,m_pagesize,s_channelCount,0xff);
 	m_page2Image = new SimpleImage(m_pagesize,m_pagesize,s_channelCount,0xff);
 	m_tileImage = new SimpleImage(m_tilesize,m_tilesize,s_channelCount,0xff);
@@ -119,12 +110,12 @@ bool TileGenerator::generate(const std::string& _filePath)
 	m_4xtileImage = new SimpleImage(m_tilesize*4,m_tilesize*4,s_channelCount,0xff);
 
 	// Generate tiles
-	std::cout<<"Generating tiles\n"<<std::endl;
+	std::cout<<"Generating tiles"<<std::endl;
 	auto mipcount = m_indexer->getMipCount();
 	for(int i = 0; i<mipcount; ++i)
 	{
-		int count = (m_info->m_virtualTextureSize/m_tilesize)>>i;
-		std::cout<<"Generating Mip:%d Count:%dx%d\n"<<i<<count<<count<<std::endl;
+		int count = (m_info.m_virtualTextureSize/m_tilesize)>>i;
+		std::cout<<"Generating Mip: Count"<<i<<count<<count<<std::endl;
 		for(int y = 0; y<count; ++y)
 		{
 			for(int x = 0; x<count; ++x)
@@ -137,7 +128,7 @@ bool TileGenerator::generate(const std::string& _filePath)
 		}
 	}
 
-	std::cout<<"Finising\n"<<std::endl;
+	std::cout<<"Finising"<<std::endl;
 	// Write header
 	m_tileDataFile->writeInfo();
 	// Close tile file
@@ -147,7 +138,7 @@ bool TileGenerator::generate(const std::string& _filePath)
 		m_tileDataFile = nullptr;
 	}
 	m_tileDataFile = nullptr;
-	std::cout<<"Done!\n"<<std::endl;
+	std::cout<<"Done!"<<std::endl;
 	return true;
 }
 
@@ -155,8 +146,8 @@ void TileGenerator::CopyTile(SimpleImage& image,Page request)
 {
 	if(request.m_mip==0)
 	{
-		int x = request.m_x*m_tilesize-m_info->m_borderSize;
-		int y = request.m_y*m_tilesize-m_info->m_borderSize;
+		int x = request.m_x*m_tilesize-m_info.m_borderSize;
+		int y = request.m_y*m_tilesize-m_info.m_borderSize;
 		// Copy sub-image with border
 		auto srcPitch = m_sourceImage.m_width*s_channelCount;
 		auto src = (uint8_t*)m_sourceImage.m_data;
@@ -177,7 +168,7 @@ void TileGenerator::CopyTile(SimpleImage& image,Page request)
 		int xpos = request.m_x<<1;
 		int ypos = request.m_y<<1;
 		int mip = request.m_mip-1;
-		int size = m_info->GetPageTableSize()>>mip;
+		int size = m_info.GetPageTableSize()>>mip;
 		m_4xtileImage->clear((uint8_t)request.m_mip);
 
 		for(int y = 0; y<4; ++y)
@@ -190,14 +181,14 @@ void TileGenerator::CopyTile(SimpleImage& image,Page request)
 				page.m_x = (int)glm::mod((float)page.m_x,(float)size);
 				page.m_y = (int)glm::mod((float)page.m_y,(float)size);
 				m_tileDataFile->readPage(m_indexer->getIndexFromPage(page),&m_page2Image->m_data[0]);
-				Rect src_rect = { m_info->m_borderSize,m_info->m_borderSize,m_tilesize,m_tilesize };
+				Rect src_rect = { m_info.m_borderSize,m_info.m_borderSize,m_tilesize,m_tilesize };
 				TPoint dst_offset = { x*m_tilesize,y*m_tilesize };
 				m_4xtileImage->copy(dst_offset,*m_page2Image,src_rect);
 			}
 		}
 
 		SimpleImage::mipmap(&m_4xtileImage->m_data[0],m_4xtileImage->m_width,s_channelCount,&m_2xtileImage->m_data[0]);
-		Rect srect = { m_tilesize/2-m_info->m_borderSize,m_tilesize/2-m_info->m_borderSize,m_pagesize,m_pagesize };
+		Rect srect = { m_tilesize/2-m_info.m_borderSize,m_tilesize/2-m_info.m_borderSize,m_pagesize,m_pagesize };
 		image.copy({ 0,0 },*m_2xtileImage,srect);
 	}
 }

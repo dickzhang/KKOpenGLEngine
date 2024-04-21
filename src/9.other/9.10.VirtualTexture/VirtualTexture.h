@@ -21,7 +21,7 @@
 class VirtualTexture
 {
 public:
-	VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo* _info, int _atlassize, int _uploadsperframe, int _mipBias = 4);
+	VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo _info, int _atlassize, int _uploadsperframe, int _mipBias = 4);
 	~VirtualTexture();
 
 	int  getMipBias() const;
@@ -45,13 +45,13 @@ public:
 	void setVTUniforms();
 	void setMipUniforms();
 private:
-	TileDataFile* m_tileDataFile;
-	VirtualTextureInfo* m_info;
-	PageIndexer* m_indexer;
-	PageTable* m_pageTable;
-	TextureAtlas* m_atlas;
-	PageLoader* m_loader;
-	PageCache* m_cache;
+	TileDataFile* m_tileDataFile=nullptr;
+	VirtualTextureInfo m_info;
+	PageIndexer* m_indexer = nullptr;
+	PageTable* m_pageTable = nullptr;
+	TextureAtlas* m_atlas = nullptr;
+	PageLoader* m_loader = nullptr;
+	PageCache* m_cache = nullptr;
 	int m_atlasCount;
 	int m_uploadsPerFrame;
 	std::vector<PageCount> m_pagesToLoad;

@@ -2,12 +2,12 @@
 #include "OpenGLTexture.h"
 #include "OpenGLMappings.h"
 
-TextureAtlas::TextureAtlas(VirtualTextureInfo* _info,int _count,int _uploadsperframe)
+TextureAtlas::TextureAtlas(VirtualTextureInfo _info,int _count,int _uploadsperframe)
 	: m_info(_info)
-	,m_stagingPool(_info->GetPageSize(),_info->GetPageSize(),_uploadsperframe,false)
+	,m_stagingPool(_info.GetPageSize(),_info.GetPageSize(),_uploadsperframe,false)
 {
 	// Create atlas texture
-	int pagesize = m_info->GetPageSize();
+	int pagesize = m_info.GetPageSize();
 	int size = _count*pagesize;
 
 	TextureInfo info;
@@ -37,7 +37,7 @@ void TextureAtlas::uploadPage(TPoint pt,uint8_t* data,unsigned short blitViewId)
 	m_stagingPool.next();
 
 	// Update texture with new atlas data
-	auto pagesize = uint16_t(m_info->GetPageSize());
+	auto pagesize = uint16_t(m_info.GetPageSize());
 
 	OpenGLTexture::updateTexture2D(writer,0,0,0,pagesize,pagesize,data);
 

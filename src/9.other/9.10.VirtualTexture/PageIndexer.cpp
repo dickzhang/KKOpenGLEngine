@@ -1,13 +1,13 @@
 #include "PageIndexer.h"
 
-PageIndexer::PageIndexer(VirtualTextureInfo* _info)
+PageIndexer::PageIndexer(VirtualTextureInfo _info)
 {
 	m_info = _info;
-	m_mipcount = int(glm::log2((float)m_info->GetPageTableSize()) + 1);
+	m_mipcount = int(glm::log2((float)m_info.GetPageTableSize()) + 1);
 	m_sizes.resize(m_mipcount);
 	for (int i = 0; i < m_mipcount; ++i)
 	{
-		m_sizes[i] = (m_info->m_virtualTextureSize / m_info->m_tileSize) >> i;
+		m_sizes[i] = (m_info.m_virtualTextureSize / m_info.m_tileSize) >> i;
 	}
 	m_offsets.resize(m_mipcount);
 	m_count = 0;

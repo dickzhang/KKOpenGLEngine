@@ -12,7 +12,7 @@
 class TileDataFile
 {
 public:
-	TileDataFile(const std::string& filename, VirtualTextureInfo* _info, bool _readWrite = false);
+	TileDataFile(const std::string& filename, VirtualTextureInfo _info, bool _readWrite = false);
 	~TileDataFile();
 
 	void readInfo();
@@ -22,7 +22,7 @@ public:
 	void writePage(int index, uint8_t* data);
 
 private:
-	VirtualTextureInfo* m_info;
+	VirtualTextureInfo m_info;
 	int					m_size;
 	FILE* m_file;
 };

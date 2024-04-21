@@ -12,7 +12,7 @@
 class TextureAtlas
 {
 public:
-	TextureAtlas(VirtualTextureInfo* _info, int count, int uploadsperframe);
+	TextureAtlas(VirtualTextureInfo _info, int count, int uploadsperframe);
 	~TextureAtlas();
 
 	void setUploadsPerFrame(int count);
@@ -21,7 +21,7 @@ public:
 	unsigned short getTexture();
 
 private:
-	VirtualTextureInfo* m_info;
+	VirtualTextureInfo m_info;
 	GLuint m_texture;
 	StagingPool m_stagingPool;
 };

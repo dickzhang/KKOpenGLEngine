@@ -19,9 +19,9 @@ public:
 
 private:
 	std::vector<unsigned int>  m_stagingTextures;
-	int			m_stagingTextureIndex;
-	int			m_width;
-	int			m_height;
+	int			m_stagingTextureIndex=0;
+	int			m_width=0;
+	int			m_height=0;
 	uint64_t	m_flags;
 	TextureInfo m_TextureInfo;
 };

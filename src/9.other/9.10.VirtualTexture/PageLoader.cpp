@@ -1,7 +1,7 @@
 #include "PageLoader.h"
 
 // PageLoader
-PageLoader::PageLoader(TileDataFile* _tileDataFile, PageIndexer* _indexer, VirtualTextureInfo* _info)
+PageLoader::PageLoader(TileDataFile* _tileDataFile, PageIndexer* _indexer, VirtualTextureInfo _info)
 	: m_colorMipLevels(false)
 	, m_showBorders(false)
 	, m_tileDataFile(_tileDataFile)
@@ -20,7 +20,7 @@ void PageLoader::submit(Page request)
 
 void PageLoader::loadPage(ReadState& state)
 {
-	int size = m_info->GetPageSize() * m_info->GetPageSize() * s_channelCount;
+	int size = m_info.GetPageSize() * m_info.GetPageSize() * s_channelCount;
 	state.m_data.resize(size);
 
 	if (m_colorMipLevels)
@@ -45,8 +45,8 @@ void PageLoader::onPageLoadComplete(ReadState& state)
 
 void PageLoader::copyBorder(uint8_t* image)
 {
-	int pagesize = m_info->GetPageSize();
-	int bordersize = m_info->m_borderSize;
+	int pagesize = m_info.GetPageSize();
+	int bordersize = m_info.m_borderSize;
 
 	for (int i = 0; i < pagesize; ++i)
 	{
@@ -82,7 +82,7 @@ void PageLoader::copyColor(uint8_t* image, Page request)
 		{   0, 255,   0, 255 },
 	};
 
-	int pagesize = m_info->GetPageSize();
+	int pagesize = m_info.GetPageSize();
 
 	for (int y = 0; y < pagesize; ++y)
 	{

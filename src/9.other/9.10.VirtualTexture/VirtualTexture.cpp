@@ -1,14 +1,14 @@
 #include "VirtualTexture.h"
 #include <algorithm>
 // VirtualTexture
-VirtualTexture::VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo* _info, int _atlassize, int _uploadsperframe, int _mipBias)
+VirtualTexture::VirtualTexture(TileDataFile* _tileDataFile, VirtualTextureInfo _info, int _atlassize, int _uploadsperframe, int _mipBias)
 {
 	m_tileDataFile = _tileDataFile;
 	m_info = _info;
 	m_uploadsPerFrame = _uploadsperframe;
 	m_mipBias = _mipBias;
 
-	m_atlasCount = _atlassize / m_info->GetPageSize();
+	m_atlasCount = _atlassize / m_info.GetPageSize();
 	// Setup indexer
 	m_indexer = new PageIndexer(m_info);
 	m_pagesToLoad.reserve(m_indexer->getCount());
@@ -68,13 +68,13 @@ void VirtualTexture::setMipBias(int value)
 void VirtualTexture::setVTUniforms()
 {
 	//todo 这里要和shader里面的uniform名称对应上
-	int pagesize = m_info->GetPageSize();
-	m_vtShader.setFloat("VirtualTextureSize", (float)m_info->m_virtualTextureSize);
+	int pagesize = m_info.GetPageSize();
+	m_vtShader.setFloat("VirtualTextureSize", (float)m_info.m_virtualTextureSize);
 	m_vtShader.setFloat("ooAtlasScale", 1.0f / (float)m_atlasCount);
-	m_vtShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info->m_borderSize) / pagesize));
-	m_vtShader.setFloat("BorderOffset", (float)m_info->m_borderSize / (float)pagesize);
+	m_vtShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info.m_borderSize) / pagesize));
+	m_vtShader.setFloat("BorderOffset", (float)m_info.m_borderSize / (float)pagesize);
 	m_vtShader.setFloat("MipBias", (float)m_mipBias);
-	m_vtShader.setFloat("PageTableSize", (float)m_info->GetPageTableSize());
+	m_vtShader.setFloat("PageTableSize", (float)m_info.GetPageTableSize());
 	m_vtShader.setSampler2D("s_vt_page_table", m_pageTable->getTexture(),0);
 	m_vtShader.setSampler2D("s_vt_texture_atlas", m_atlas->getTexture(),1);
 }
@@ -82,13 +82,15 @@ void VirtualTexture::setVTUniforms()
 void VirtualTexture::setMipUniforms()
 {
 	//todo 这里要和shader里面的uniform名称对应上
-	int pagesize = m_info->GetPageSize();
-	m_mipShader.setFloat("VirtualTextureSize", (float)m_info->m_virtualTextureSize);
-	m_mipShader.setFloat("ooAtlasScale", 1.0f / (float)m_atlasCount);
-	m_mipShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info->m_borderSize) / pagesize));
-	m_mipShader.setFloat("BorderOffset", (float)m_info->m_borderSize / (float)pagesize);
-	m_mipShader.setFloat("MipBias", (float)m_mipBias);
-	m_mipShader.setFloat("PageTableSize", (float)m_info->GetPageTableSize());
+	int pagesize = m_info.GetPageSize();
+	m_mipShader.setFloat("VirtualTextureSize",(float)m_info.m_virtualTextureSize);
+	m_mipShader.setFloat("ooAtlasScale",1.0f/(float)m_atlasCount);
+	m_mipShader.setFloat("BorderScale",(float)((pagesize-2.0f*m_info.m_borderSize)/pagesize));
+	m_mipShader.setFloat("BorderOffset",(float)m_info.m_borderSize/(float)pagesize);
+	m_mipShader.setFloat("MipBias",(float)m_mipBias);
+	m_mipShader.setFloat("PageTableSize",(float)m_info.GetPageTableSize());
+	m_mipShader.setSampler2D("s_vt_page_table",m_pageTable->getTexture(),0);
+	m_mipShader.setSampler2D("s_vt_texture_atlas",m_atlas->getTexture(),1);
 }
 
 void VirtualTexture::setUploadsPerFrame(int count)

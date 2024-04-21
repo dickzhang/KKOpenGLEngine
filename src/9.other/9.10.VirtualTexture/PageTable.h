@@ -15,12 +15,12 @@
 class PageTable
 {
 public:
-	PageTable(PageCache* _cache, VirtualTextureInfo* _info, PageIndexer* _indexer);
+	PageTable(PageCache* _cache, VirtualTextureInfo _info, PageIndexer* _indexer);
 	~PageTable();
 	void update(unsigned short blitViewId);
 	unsigned short getTexture();
 private:
-	VirtualTextureInfo* m_info = nullptr;
+	VirtualTextureInfo m_info;
 	GLuint m_texture = 0;
 	PageIndexer* m_indexer = nullptr;
 	Quadtree* m_quadtree = nullptr;

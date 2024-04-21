@@ -14,7 +14,7 @@
 class FeedbackBuffer
 {
 public:
-	FeedbackBuffer(VirtualTextureInfo* _info, int _width, int _height);
+	FeedbackBuffer(VirtualTextureInfo _info, int _width, int _height);
 	~FeedbackBuffer();
 	void clear();
 	void copy(unsigned short  viewId);
@@ -29,7 +29,7 @@ public:
 	int getHeight() const;
 	RenderTexture* GetFrameBuffer();
 private:
-	VirtualTextureInfo* m_info = nullptr;
+	VirtualTextureInfo m_info;
 	PageIndexer* m_indexer = nullptr;
 	int m_width = 0;
 	int m_height = 0;

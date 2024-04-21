@@ -41,14 +41,14 @@ public:
 	};
 
 public:
-	TileGenerator(VirtualTextureInfo* _info);
+	TileGenerator(VirtualTextureInfo _info);
 	~TileGenerator();
 	bool generate(const std::string& filename);
 
 private:
 	void CopyTile(SimpleImage& image, Page request);
 private:
-	VirtualTextureInfo* m_info = nullptr;
+	VirtualTextureInfo m_info;
 	PageIndexer* m_indexer = nullptr;
 	TileDataFile* m_tileDataFile = nullptr;
 	int	m_tilesize = 0;

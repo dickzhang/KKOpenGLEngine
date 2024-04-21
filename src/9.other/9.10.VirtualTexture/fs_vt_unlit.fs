@@ -1,8 +1,10 @@
 #version 330 core
 
 uniform float VirtualTextureSize;
+uniform float AtlasScale;
 uniform float BorderScale;
 uniform float BorderOffset;
+uniform float MipBias;
 uniform float PageTableSize;
 
 uniform sampler2D s_vt_page_table;
@@ -26,7 +28,7 @@ float MipLevel( vec2 uv, float size )
 vec3 SampleTable( vec2 uv, float mip )
 {
    vec2 offset = fract( uv * PageTableSize ) / PageTableSize;
-   return texture2DLod( s_vt_page_table, uv - offset, mip ).xyz;
+   return textureLod( s_vt_page_table, uv - offset, mip ).xyz;
 }
 
 // This functions samples from the texture atlas and returns the final color
@@ -41,7 +43,7 @@ vec4 SampleAtlas( vec3 page, vec2 uv )
 
    vec2 offset = floor( page.xy * 255.0 + 0.5 );
 
-   return texture2D( s_vt_texture_atlas, ( offset + uv ) * AtlasScale );
+   return texture( s_vt_texture_atlas, ( offset + uv ) * AtlasScale );
 }
 
 // Ugly brute force trilinear, look up twice and mix
