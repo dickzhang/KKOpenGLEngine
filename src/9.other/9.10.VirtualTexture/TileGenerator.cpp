@@ -84,11 +84,9 @@ bool TileGenerator::generate(const std::string& _filePath)
 			m_sourceImage.m_width = width;
 			m_sourceImage.m_height = height;
 			m_sourceImage.m_format = EPixelFormat::PF_BGRA;
-			//m_sourceImage.m_size = width*height*nrChannels;
-			m_sourceImage.m_size = width*height*4;
+			m_sourceImage.m_size = width*height*nrChannels;
 			m_sourceImage.m_offset = 0;
 			m_sourceImage.m_hasAlpha = nrChannels==4 ? true : false;
-			m_sourceImage.m_hasAlpha = true;
 		}
 		else
 		{

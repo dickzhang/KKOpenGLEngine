@@ -42,8 +42,8 @@ public:
 	void clear();
 	void update(const std::vector<int>& requests, unsigned short  blitViewId);
 	void LoadShader();
-	void setVTUniforms();
-	void setMipUniforms();
+	void setVTUniforms(const glm::mat4 mvp);
+	void setMipUniforms(const glm::mat4 mvp);
 private:
 	TileDataFile* m_tileDataFile=nullptr;
 	VirtualTextureInfo m_info;

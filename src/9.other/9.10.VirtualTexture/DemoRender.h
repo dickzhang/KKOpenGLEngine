@@ -33,11 +33,12 @@ public:
 private:
 	void GenerateMesh();
 	void CreateVAO();
-	void DrawObject();
+	void renderPlane();
 private:
 	VirtualTexture* m_VirtualTexture = nullptr;
 	FeedbackBuffer* m_FeedbackBuffer = nullptr;
 	VirtualTextureInfo m_VirtualTextureInfo;
 	TileGenerator* m_TileGenerator = nullptr;
 	TileDataFile* m_TileDataFile = nullptr;
+	GLuint planeVBO,planeVAO;
 };
