@@ -153,6 +153,10 @@ void TileGenerator::CopyTile(SimpleImage& image,Page request)
 		auto dst = &image.m_data[0];
 		for(int iy = 0; iy<m_pagesize; ++iy)
 		{
+			if(iy==129)
+			{
+				int a = 0;
+			}
 			int ry = glm::clamp(y+iy,0,(int)m_sourceImage.m_height-1);
 			for(int ix = 0; ix<m_pagesize; ++ix)
 			{

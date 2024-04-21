@@ -70,35 +70,33 @@ void DemoRender::Render(Camera* camera,glm::vec2 mouseuv)
 	glViewport(0,0,WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT);
 	glClearColor(0.3,0.3,0.3,1.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	auto feedBackFBO = m_FeedbackBuffer->GetFrameBuffer();
+	feedBackFBO->Bind();
+	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glClearColor(0.3,0.3,0.3,1.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	glViewport(0,0,m_FeedbackBuffer->getWidth(),m_FeedbackBuffer->getHeight());
+	m_VirtualTexture->setMipUniforms(vp);
+	renderPlane();
+	m_FeedbackBuffer->download();
+	m_VirtualTexture->update(m_FeedbackBuffer->getRequests(),4);
+	m_FeedbackBuffer->clear();
+	m_FeedbackBuffer->copy(3);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
+	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glViewport(0,0,WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT);
+	glClearColor(0.3,0.3,0.3,1.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	m_VirtualTexture->setVTUniforms(vp);
 	renderPlane();
-
-	//auto feedBackFBO = m_FeedbackBuffer->GetFrameBuffer();
-	//feedBackFBO->Bind();
-	//glEnable(GL_BLEND);
-	//glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glClearColor(0.3,0.3,0.3,1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//glViewport(0,0,m_FeedbackBuffer->getWidth(),m_FeedbackBuffer->getHeight());
-	//m_VirtualTexture->setMipUniforms(vp);
-	//renderPlane();
-	//m_FeedbackBuffer->download();
-	//m_VirtualTexture->update(m_FeedbackBuffer->getRequests(),4);
-	//m_FeedbackBuffer->clear();
-	//m_FeedbackBuffer->copy(3);
-	//
-	//glBindFramebuffer(GL_FRAMEBUFFER,0);
-	//glEnable(GL_BLEND);
-	//glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glViewport(0,0,WindowSize::SCR_WIDTH,WindowSize::SCR_HEIGHT);
-	//glClearColor(0.3,0.3,0.3,1.0f);
-	//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//m_VirtualTexture->setVTUniforms(vp);
-	//renderPlane();
 }
 
 void DemoRender::renderPlane()
