@@ -104,5 +104,30 @@ struct Memory
 	uint32_t size; //!< Data size.
 };
 
+struct ImageContainer
+{
+	void* m_data = nullptr;
+	EPixelFormat m_format = EPixelFormat::PF_A8R8G8B8;
+	uint32_t m_size = 0;
+	uint32_t m_offset = 0;
+	uint32_t m_width = 0;
+	uint32_t m_height = 0;
+	uint32_t m_depth = 0;
+	uint16_t m_numLayers = 1;
+	uint8_t  m_numMips = 0;
+	bool     m_hasAlpha = false;
+	bool     m_srgb = false;
+
+	void release()
+	{
+		if (m_data)
+		{
+			delete m_data;
+			m_data = nullptr;
+		}
+	}
+};
+
+
 static const int s_channelCount = 4;
 static const int s_tileFileDataOffset = sizeof(VirtualTextureInfo);

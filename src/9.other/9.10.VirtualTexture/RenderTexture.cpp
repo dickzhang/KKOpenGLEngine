@@ -74,7 +74,10 @@ unsigned int RenderTexture::GetDepthTexture()
 {
 	return depthTex;
 }
-
+unsigned int RenderTexture::GetColorTexture()
+{
+	return tex;
+}
 void RenderTexture::BindFrameBuffer(int frameBuffer, int width, int height)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -127,7 +130,8 @@ unsigned int* RenderTexture::CreateColorAttachments(int width, int height, unsig
 	for (unsigned int i = 0; i < nColorAttachments; i++)
 	{
 		glBindTexture(GL_TEXTURE_2D, colorAttachments[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA8, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);

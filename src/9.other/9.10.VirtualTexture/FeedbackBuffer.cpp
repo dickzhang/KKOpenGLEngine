@@ -19,7 +19,7 @@ FeedbackBuffer::FeedbackBuffer(VirtualTextureInfo _info,int _width,int _height)
 	clear();
 
 	//初始化反馈帧缓冲区
-	m_RenderTexture = new RenderTexture(m_width,m_height,2);
+	m_RenderTexture = new RenderTexture(m_width,m_height);
 	m_lastStagingTexture = 0;
 }
 
@@ -47,7 +47,7 @@ void FeedbackBuffer::copy(unsigned short viewId)
 {
 	m_lastStagingTexture = m_stagingPool.getTexture();
 	//复制反馈缓冲区渲染目标到暂存纹理
-	OpenGLTexture::blit(m_lastStagingTexture,0,0,0,m_RenderTexture->getColorAttachmentTex(0),0,m_width,m_height);
+	OpenGLTexture::blit(m_lastStagingTexture,0,0,0,m_RenderTexture->GetColorTexture(),0,m_width,m_height);
 	m_stagingPool.next();
 }
 

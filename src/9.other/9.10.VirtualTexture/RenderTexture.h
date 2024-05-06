@@ -11,6 +11,7 @@ public:
 	~RenderTexture();
 	unsigned int getColorAttachmentTex(int i);
 	unsigned int GetDepthTexture();
+	unsigned int GetColorTexture();
 	void Bind();
 	void Unbind();
 private:
