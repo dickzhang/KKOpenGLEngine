@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include "Common.h"
 // Point
 struct TPoint
 {
@@ -107,7 +107,7 @@ struct Memory
 struct ImageContainer
 {
 	void* m_data = nullptr;
-	EPixelFormat m_format = EPixelFormat::PF_A8R8G8B8;
+	EPixelFormat m_format = EPixelFormat::PF_R8G8B8A8;
 	uint32_t m_size = 0;
 	uint32_t m_offset = 0;
 	uint32_t m_width = 0;

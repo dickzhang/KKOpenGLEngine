@@ -15,7 +15,7 @@ PageTable::PageTable(PageCache* _cache,VirtualTextureInfo _info,PageIndexer* _in
 	info.height = size;
 	info.hasmip = true;
 	info.layernum = 1;
-	info.format = EPixelFormat::PF_A8R8G8B8;
+	info.format = EPixelFormat::PF_R8G8B8A8;
 	info.addressingMode = ETextureAddressingMode::TAM_Clamp;
 	info.filterType = ETextureFilterType::Point;
 	m_texture = OpenGLTexture::generateTexture2D(info);
@@ -41,7 +41,7 @@ PageTable::PageTable(PageCache* _cache,VirtualTextureInfo _info,PageIndexer* _in
 		info.height = mipSize;
 		info.hasmip = false;
 		info.layernum = 1;
-		info.format = EPixelFormat::PF_A8R8G8B8;
+		info.format = EPixelFormat::PF_R8G8B8A8;
 		info.addressingMode = ETextureAddressingMode::TAM_Clamp;
 		info.filterType = ETextureFilterType::Point;
 		auto stagingTexture = OpenGLTexture::generateTexture2D(info);

@@ -53,7 +53,6 @@ void DemoRender::Init()
 	GenerateMesh();
 }
 
-
 void DemoRender::PreRender(Camera* camera)
 {
 

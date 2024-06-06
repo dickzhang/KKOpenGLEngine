@@ -103,6 +103,7 @@ bool TileGenerator::generate(const std::string& _filePath)
 	m_tileDataFile = new  TileDataFile(tmp, m_info, true);
 	m_page1Image = new SimpleImage(m_pagesize, m_pagesize, s_channelCount, 0xff);
 	m_page2Image = new SimpleImage(m_pagesize, m_pagesize, s_channelCount, 0xff);
+
 	m_tileImage = new SimpleImage(m_tilesize, m_tilesize, s_channelCount, 0xff);
 	m_2xtileImage = new SimpleImage(m_tilesize * 2, m_tilesize * 2, s_channelCount, 0xff);
 	m_4xtileImage = new SimpleImage(m_tilesize * 4, m_tilesize * 4, s_channelCount, 0xff);

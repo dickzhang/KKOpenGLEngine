@@ -33,8 +33,6 @@ enum EPixelFormat
 	/// @brief Unknown.
 	PF_Unknown = 0,
 	/// @brief Color with alpha texture format, 8-bits per channel.
-	PF_A8R8G8B8,
-	/// @brief Color with alpha texture format, 8-bits per channel.
 	PF_R8G8B8A8,
 	/// @brief Color with alpha texture format, 8-bits per channel, use sRGB color space.
 	PF_R8G8B8A8_SRGB,

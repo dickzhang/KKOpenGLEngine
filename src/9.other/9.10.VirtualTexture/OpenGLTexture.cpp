@@ -94,7 +94,7 @@ void OpenGLTexture::updateTexture2D(GLenum target,GLint level,GLint xoffset,GLin
 	glBindTexture(GL_TEXTURE_2D,0);
 }
 
-void OpenGLTexture::readTexture2D(GLenum target,GLint level,GLenum format,GLenum type,void* pixels)
+void OpenGLTexture::readTexture2D(GLenum target, GLint level, GLenum format, GLenum type, void* pixels)
 {
 	glBindTexture(GL_TEXTURE_2D,target);
 	glGetTexImage(target,level,format,type,pixels);
@@ -103,8 +103,8 @@ void OpenGLTexture::readTexture2D(GLenum target,GLint level,GLenum format,GLenum
 
 void OpenGLTexture::blit(GLenum dsttarget,GLint dstlevel,GLint dstxoffset,GLint dstyoffset,GLenum srctarget,GLint srclevel,GLint width,GLint height)
 {
-	GLenum format = OpenGLMappings::Get(EPixelFormat::PF_A8R8G8B8);
-	GLenum pixelType = OpenGLMappings::GetPixelType(EPixelFormat::PF_A8R8G8B8);
+	GLenum format = OpenGLMappings::Get(EPixelFormat::PF_R8G8B8A8);
+	GLenum pixelType = OpenGLMappings::GetPixelType(EPixelFormat::PF_R8G8B8A8);
 	std::vector<uint8_t> m_downloadBuffer;
 	m_downloadBuffer.resize(width*height*s_channelCount);
 	OpenGLTexture::readTexture2D(srctarget,0,format,pixelType,&m_downloadBuffer[0]);

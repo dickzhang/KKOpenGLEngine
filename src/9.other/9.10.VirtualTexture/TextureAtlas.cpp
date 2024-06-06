@@ -15,7 +15,7 @@ TextureAtlas::TextureAtlas(VirtualTextureInfo _info,int _count,int _uploadsperfr
 	info.height = size;
 	info.hasmip = false;
 	info.layernum = 1;
-	info.format = EPixelFormat::PF_A8R8G8B8;
+	info.format = EPixelFormat::PF_R8G8B8A8;
 	info.addressingMode = ETextureAddressingMode::TAM_Clamp;
 	m_texture = OpenGLTexture::generateTexture2D(info);
 }

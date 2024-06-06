@@ -64,8 +64,8 @@ void FeedbackBuffer::download()
 		return;
 	}
 
-	GLenum format = OpenGLMappings::Get(EPixelFormat::PF_A8R8G8B8);
-	GLenum pixelType = OpenGLMappings::GetPixelType(EPixelFormat::PF_A8R8G8B8);
+	GLenum format = OpenGLMappings::Get(EPixelFormat::PF_R8G8B8A8);
+	GLenum pixelType = OpenGLMappings::GetPixelType(EPixelFormat::PF_R8G8B8A8);
 	//读取纹理数据
 	OpenGLTexture::readTexture2D(m_lastStagingTexture,0,format,pixelType,&m_downloadBuffer[0]);
 	//循环遍历像素并检查是否写入了任何内容

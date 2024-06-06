@@ -4,7 +4,6 @@ ImageContainer* ImageParseUtils::ImageParse(const ImageContainer& _data, EPixelF
 {
 	if (_dstFormat == _srcFormat)
 	{
-		return _data;
+		return nullptr;
 	}
-
 }

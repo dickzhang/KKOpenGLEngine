@@ -20,7 +20,7 @@ unsigned int WindowSize::SCR_WIDTH = 1280;
 unsigned int WindowSize::SCR_HEIGHT = 720;
 
 // camera
-Camera camera(glm::vec3(0.0f,0.0f,0.0f));
+Camera camera(glm::vec3(0.0f,5.0f,-15.0f));
 float lastX = WindowSize::SCR_WIDTH/2.0;
 float lastY = WindowSize::SCR_HEIGHT/2.0;
 bool firstMouse = true;
