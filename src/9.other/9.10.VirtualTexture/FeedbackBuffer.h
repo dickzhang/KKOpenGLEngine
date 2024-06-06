@@ -17,7 +17,7 @@ public:
 	FeedbackBuffer(VirtualTextureInfo _info, int _width, int _height);
 	~FeedbackBuffer();
 	void clear();
-	void copy(unsigned short  viewId);
+	void copy();
 	void download();
 
 	//这个函数检测页面并添加页面的父级。这样做是为了在内存耗尽时可以返回到它们

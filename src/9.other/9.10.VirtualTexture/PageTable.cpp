@@ -74,7 +74,7 @@ PageTable::~PageTable()
 	}
 }
 
-void PageTable::update(unsigned short blitViewId)
+void PageTable::update()
 {
 	if(!m_quadtreeDirty)
 	{

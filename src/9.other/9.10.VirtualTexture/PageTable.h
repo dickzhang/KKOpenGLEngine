@@ -17,7 +17,7 @@ class PageTable
 public:
 	PageTable(PageCache* _cache, VirtualTextureInfo _info, PageIndexer* _indexer);
 	~PageTable();
-	void update(unsigned short blitViewId);
+	void update();
 	unsigned short getTexture();
 private:
 	VirtualTextureInfo m_info;

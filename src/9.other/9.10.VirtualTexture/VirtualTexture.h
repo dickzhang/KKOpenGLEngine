@@ -17,6 +17,7 @@
 #include "TextureAtlas.h"
 #include "PageLoader.h"
 #include "OpenGLTexture.h"
+#include "RenderTexture.h"
 
 class VirtualTexture
 {
@@ -40,9 +41,10 @@ public:
 	unsigned short getPageTableTexture();
 
 	void clear();
-	void update(const std::vector<int>& requests, unsigned short  blitViewId);
+	void update(const std::vector<int>& requests);
 	void LoadShader();
 	void setVTUniforms(const glm::mat4 mvp);
+	void setVTUniforms(const glm::mat4 mvp, RenderTexture* rt);
 	void setMipUniforms(const glm::mat4 mvp);
 private:
 	TileDataFile* m_tileDataFile=nullptr;

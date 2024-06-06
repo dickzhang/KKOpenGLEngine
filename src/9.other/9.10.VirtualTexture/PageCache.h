@@ -30,7 +30,7 @@ public:
 public:
 	PageCache(TextureAtlas* _atlas,PageLoader* _loader,int _count);
 	bool touch(Page page);
-	bool request(Page request,unsigned short blitViewId);
+	bool request(Page request);
 	void clear();
 	void loadComplete(Page page,uint8_t* data);
 
@@ -48,5 +48,4 @@ private:
 	std::vector<LruPage>		m_lru;
 	//std::unordered_set<Page>	m_loading;
 	std::vector<Page>	m_loading;
-	unsigned short  m_blitViewId;
 };

@@ -1,5 +1,5 @@
+#include "SimpleImage.h"
 #include "Quadtree.h"
-
 
 SimpleImage::SimpleImage(int _width, int _height, int _channelCount, uint8_t _clearValue)
 {

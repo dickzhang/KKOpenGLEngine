@@ -82,10 +82,10 @@ void DemoRender::Render(Camera* camera,glm::vec2 mouseuv)
 	m_VirtualTexture->setMipUniforms(vp);
 	renderPlane();
 	m_FeedbackBuffer->download();
-	m_VirtualTexture->update(m_FeedbackBuffer->getRequests(),4);
+	m_VirtualTexture->update(m_FeedbackBuffer->getRequests());
 	m_FeedbackBuffer->clear();
-	m_FeedbackBuffer->copy(3);
-	
+	m_FeedbackBuffer->copy();
+
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);

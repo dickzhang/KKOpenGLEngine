@@ -81,6 +81,21 @@ void VirtualTexture::setVTUniforms(const glm::mat4 mvp)
 	m_vtShader.setSampler2D("s_vt_texture_atlas",m_atlas->getTexture(),1);
 }
 
+void VirtualTexture::setVTUniforms(const glm::mat4 mvp, RenderTexture* rt)
+{
+	//todo 这里要和shader里面的uniform名称对应上
+	int pagesize = m_info.GetPageSize();
+	m_vtShader.use();
+	m_vtShader.setMat4("mvpMatrix", mvp);
+	m_vtShader.setFloat("VirtualTextureSize", (float)m_info.m_virtualTextureSize);
+	m_vtShader.setFloat("AtlasScale", 1.0f / (float)m_atlasCount);
+	m_vtShader.setFloat("BorderScale", (float)((pagesize - 2.0f * m_info.m_borderSize) / pagesize));
+	m_vtShader.setFloat("BorderOffset", (float)m_info.m_borderSize / (float)pagesize);
+	m_vtShader.setFloat("MipBias", (float)m_mipBias);
+	m_vtShader.setFloat("PageTableSize", (float)m_info.GetPageTableSize());
+	m_vtShader.setSampler2D("s_vt_page_table", rt->GetColorTexture(), 0);
+	m_vtShader.setSampler2D("s_vt_texture_atlas", m_atlas->getTexture(), 1);
+}
 void VirtualTexture::setMipUniforms(const glm::mat4 mvp)
 {
 	//todo 这里要和shader里面的uniform名称对应上
@@ -155,7 +170,7 @@ void VirtualTexture::clear()
 	m_cache->clear();
 }
 
-void VirtualTexture::update(const std::vector<int>& requests,unsigned short  blitViewId)
+void VirtualTexture::update(const std::vector<int>& requests)
 {
 	m_pagesToLoad.clear();
 	// Find out what is already in memory
@@ -190,7 +205,7 @@ void VirtualTexture::update(const std::vector<int>& requests,unsigned short  bli
 		// if more pages than will fit in memory or more than update per frame drop high res pages with lowest use count
 		int loadcount = glm::min(glm::min((int)m_pagesToLoad.size(),m_uploadsPerFrame),m_atlasCount*m_atlasCount);
 		for(int i = 0; i<loadcount; ++i)
-			m_cache->request(m_pagesToLoad[i].m_page,blitViewId);
+			m_cache->request(m_pagesToLoad[i].m_page);
 	}
 	else
 	{
@@ -199,5 +214,5 @@ void VirtualTexture::update(const std::vector<int>& requests,unsigned short  bli
 		--m_mipBias;
 	}
 	// Update the page table
-	m_pageTable->update(blitViewId);
+	m_pageTable->update();
 }

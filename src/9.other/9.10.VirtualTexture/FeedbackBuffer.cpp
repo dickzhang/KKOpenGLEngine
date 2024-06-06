@@ -43,7 +43,7 @@ void FeedbackBuffer::clear()
 	std::memset(&m_requests[0],0,sizeof(int)*m_indexer->getCount());
 }
 
-void FeedbackBuffer::copy(unsigned short viewId)
+void FeedbackBuffer::copy()
 {
 	m_lastStagingTexture = m_stagingPool.getTexture();
 	//复制反馈缓冲区渲染目标到暂存纹理

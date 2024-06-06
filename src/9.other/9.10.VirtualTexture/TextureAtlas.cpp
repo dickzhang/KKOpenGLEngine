@@ -30,7 +30,7 @@ void TextureAtlas::setUploadsPerFrame(int count)
 	m_stagingPool.grow(count);
 }
 
-void TextureAtlas::uploadPage(TPoint pt,uint8_t* data,unsigned short blitViewId)
+void TextureAtlas::uploadPage(TPoint pt,uint8_t* data)
 {
 	// Get next staging texture to write to
 	auto writer = m_stagingPool.getTexture();

@@ -42,9 +42,8 @@ bool PageCache::touch(Page page)
 }
 
 // Schedule a load if not already loaded or loading
-bool PageCache::request(Page request,unsigned short  blitViewId)
+bool PageCache::request(Page request)
 {
-	m_blitViewId = blitViewId;
 	auto it = std::find(m_loading.begin(),m_loading.end(),request);
 	if(it==m_loading.end())
 		//if(m_loading.find(request)==m_loading.end())
@@ -120,7 +119,7 @@ void PageCache::loadComplete(Page page,uint8_t* data)
 	}
 
 	// Notify atlas that he can upload the page and add the page to lru
-	m_atlas->uploadPage(pt,data,m_blitViewId);
+	m_atlas->uploadPage(pt,data);
 	m_lru.push_back({ page,pt });
 	//m_lru_used.insert(page);
 	m_lru_used.push_back(page);

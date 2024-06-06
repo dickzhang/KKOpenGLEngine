@@ -16,7 +16,7 @@ public:
 	~TextureAtlas();
 
 	void setUploadsPerFrame(int count);
-	void uploadPage(TPoint pt, uint8_t* data, unsigned short  blitViewId);
+	void uploadPage(TPoint pt, uint8_t* data);
 
 	unsigned short getTexture();
 
