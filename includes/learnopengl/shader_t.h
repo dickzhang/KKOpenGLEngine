@@ -270,6 +270,13 @@ public:
 		glBindTexture(GL_TEXTURE_3D, texture);
 		this->setInt(name, id);
 	}
+
+	//Shorthand for dispatch compute with some default parameter values
+	void dispatch(unsigned int x, unsigned int y, unsigned int z) const
+	{
+		glDispatchCompute(x, y, z);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	}
 private:
 	// utility function for checking shader compilation/linking errors.
 	// ------------------------------------------------------------------------
