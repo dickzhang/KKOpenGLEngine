@@ -207,7 +207,8 @@ set(9.other
     #9.7.LensFlare
     #9.8.TileBaseForwardRendering
     #9.9.TileBaseForwardCSMFXAA
-    9.10.VirtualTexture
+    #9.10.VirtualTexture
+    9.11.EdgeDetection
 )
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
